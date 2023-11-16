@@ -1,0 +1,10 @@
+{
+  "hash": "61b182b4ad0f3e90c757f3bb22da1e8f",
+  "result": {
+    "markdown": "---\ntitle: \"Classification of Spotify songs into genres\"\nauthor: \"Shrikar Banagiri\"\ndate: \"2023-11-11\"\ncategories: [news, code, analysis]\nimage: \"image.jpg\"\nexecute: \n  echo: false\n  freeze: auto\n---\n\n## **Introduction** \n\nThis [Spotify song dataset](https://www.kaggle.com/datasets/joebeachcapital/30000-spotify-songs/?select=spotify_songs.csv) contains 30,000 songs from artists of different genres. Each song has specific attributes which help the user discern its genre. These attributes include `danceability`, `energy`, `loudness`, `key`, `mode`, `speechiness`, `acousticness`, `instrumentalness`, `liveness`, `valence`, and `tempo`.\n\nThe problem statement is to classify the songs (based on the above attributes) into six genres: `pop`, `rock`, `latin`, `EDM`, `rap`, and `R&B`.\n\n```{}\n```\n\n## Importing the dataset\n\nFirst, we import the libraries required to perform the initial data analysis. The dataset, hosted on [Kaggle](https://www.kaggle.com/), is imported and stored in the variable `spotify_songs`.\n\n::: {.cell execution_count=1}\n``` {.python .cell-code}\n# Import the libraries\n\nimport numpy as np\nimport pandas as pd\nimport seaborn as sns\nimport matplotlib.pyplot as plt\nimport urllib.request\nfrom pathlib import Path\nimport os\nimport zipfile\n\n# Downloading and opening the dataset\n\ncsv_path = Path('datasets/archive.zip') # store the dataset in a local folder\nurl = 'https://www.kaggle.com/datasets/joebeachcapital/30000-spotify-songs/download?datasetVersionNumber=2' # url to download the dataset\n\nif not csv_path.is_file(): # check if the dataset directory exists. \n  Path(\"datasets\").mkdir(parents=True,exist_ok=True) # Create the directory\n  urllib.request.urlretrieve(url, csv_path)\n  with zipfile.ZipFile(csv_path) as spotify_file:\n    spotify_file.extractall(path='datasets')\n    \nspotify_songs = pd.read_csv(Path('datasets/spotify_songs.csv')) # Store the dataset in a variable\n```\n:::\n\n\n```{}\n```\n\n```{}\n```\n\n",
+    "supporting": [
+      "index_files\\figure-pdf"
+    ],
+    "filters": []
+  }
+}

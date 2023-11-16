@@ -1,0 +1,93 @@
+[
+  {
+    "objectID": "posts/welcome/index.html",
+    "href": "posts/welcome/index.html",
+    "title": "Welcome To My Blog",
+    "section": "",
+    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "CS 5805 Machine Learning",
+    "section": "",
+    "text": "Classification of Spotify songs into genres\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nClassification of Spotify songs into genres\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nNov 11, 2023\n\n\nShrikar Banagiri\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nNov 8, 2023\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this blog"
+  },
+  {
+    "objectID": "posts/post-with-code/index.html",
+    "href": "posts/post-with-code/index.html",
+    "title": "Classification of Spotify songs into genres",
+    "section": "",
+    "text": "This Spotify song dataset contains over 30,000 songs from artists of different genres. Each song has specific attributes which help the user discern its genre. These attributes include danceability, energy, loudness, key, mode, speechiness, acousticness, instrumentalness, liveness, valence, and tempo.\nThe problem statement is to classify the songs (based on the above attributes) into six genres: pop, rock, latin, EDM, rap, and R&B."
+  },
+  {
+    "objectID": "posts/post-with-code/index.html#introduction",
+    "href": "posts/post-with-code/index.html#introduction",
+    "title": "Classification of Spotify songs into genres",
+    "section": "",
+    "text": "This Spotify song dataset contains over 30,000 songs from artists of different genres. Each song has specific attributes which help the user discern its genre. These attributes include danceability, energy, loudness, key, mode, speechiness, acousticness, instrumentalness, liveness, valence, and tempo.\nThe problem statement is to classify the songs (based on the above attributes) into six genres: pop, rock, latin, EDM, rap, and R&B."
+  },
+  {
+    "objectID": "posts/post-with-code/index.html#importing-the-dataset",
+    "href": "posts/post-with-code/index.html#importing-the-dataset",
+    "title": "Classification of Spotify songs into genres",
+    "section": "Importing the dataset",
+    "text": "Importing the dataset\nFirst, we import the libraries required to perform the initial data analysis. The dataset, hosted on Kaggle, is imported and stored in the variable spotify_songs.\n\n# Import the libraries\n\nimport numpy as np\nimport pandas as pd\nimport seaborn as sns\nimport matplotlib.pyplot as plt\nimport urllib.request\nfrom pathlib import Path\nimport os\nimport zipfile\n\n# Downloading and opening the dataset\n\ncsv_path = Path('datasets/archive.zip') # store the dataset in a local folder\nurl = 'https://www.kaggle.com/datasets/joebeachcapital/30000-spotify-songs/download?datasetVersionNumber=2' # url to download the dataset\n\nif not csv_path.is_file(): # check if the dataset directory exists. \n  Path(\"datasets\").mkdir(parents=True,exist_ok=True) # Create the directory\n  urllib.request.urlretrieve(url, csv_path)\n  with zipfile.ZipFile(csv_path) as spotify_file:\n    spotify_file.extractall(path='datasets')\n    \nspotify_songs = pd.read_csv(Path('datasets/spotify_songs.csv')) # Store the dataset in a variable"
+  },
+  {
+    "objectID": "docs/posts/post-with-code/index.html",
+    "href": "docs/posts/post-with-code/index.html",
+    "title": "",
+    "section": "",
+    "text": "Code"
+  },
+  {
+    "objectID": "docs/posts/post-with-code/index.html#introduction",
+    "href": "docs/posts/post-with-code/index.html#introduction",
+    "title": "",
+    "section": "Introduction",
+    "text": "Introduction\nThis Spotify song dataset contains 30,000 songs from artists of different genres. Each song has specific attributes which help the user discern its genre. These attributes include danceability, energy, loudness, key, mode, speechiness, acousticness, instrumentalness, liveness, valence, and tempo.\nThe problem statement is to classify the songs (based on the above attributes) into six genres: pop, rock, latin, EDM, rap, and R&B."
+  },
+  {
+    "objectID": "docs/posts/post-with-code/index.html#importing-the-dataset",
+    "href": "docs/posts/post-with-code/index.html#importing-the-dataset",
+    "title": "",
+    "section": "Importing the dataset",
+    "text": "Importing the dataset\nFirst, we import the libraries required to perform the initial data analysis. The dataset, hosted on Kaggle, is imported and stored in the variable spotify_songs.\n# Import the libraries\n\nimport numpy as np\nimport pandas as pd\nimport seaborn as sns\nimport matplotlib.pyplot as plt\nimport urllib.request\nfrom pathlib import Path\nimport os\nimport zipfile\n\n# Downloading and opening the dataset\n\ncsv_path = Path('datasets/archive.zip') # store the dataset in a local folder\nurl = 'https://www.kaggle.com/datasets/joebeachcapital/30000-spotify-songs/download?datasetVersionNumber=2' # url to download the dataset\n\nif not csv_path.is_file(): # check if the dataset directory exists. \n  Path(\"datasets\").mkdir(parents=True,exist_ok=True) # Create the directory\n  urllib.request.urlretrieve(url, csv_path)\n  with zipfile.ZipFile(csv_path) as spotify_file:\n    spotify_file.extractall(path='datasets')\n    \nspotify_songs = pd.read_csv(Path('datasets/spotify_songs.csv')) # Store the dataset in a variable"
+  },
+  {
+    "objectID": "posts/post-with-code/index.html#analyzing-the-data",
+    "href": "posts/post-with-code/index.html#analyzing-the-data",
+    "title": "Classification of Spotify songs into genres",
+    "section": "Analyzing the Data",
+    "text": "Analyzing the Data\nLet’s look at the non-null entries in the dataset using the info() method below.\n\nspotify_songs.info()\n\n&lt;class 'pandas.core.frame.DataFrame'&gt;\nRangeIndex: 32833 entries, 0 to 32832\nData columns (total 23 columns):\n #   Column                    Non-Null Count  Dtype  \n---  ------                    --------------  -----  \n 0   track_id                  32833 non-null  object \n 1   track_name                32828 non-null  object \n 2   track_artist              32828 non-null  object \n 3   track_popularity          32833 non-null  int64  \n 4   track_album_id            32833 non-null  object \n 5   track_album_name          32828 non-null  object \n 6   track_album_release_date  32833 non-null  object \n 7   playlist_name             32833 non-null  object \n 8   playlist_id               32833 non-null  object \n 9   playlist_genre            32833 non-null  object \n 10  playlist_subgenre         32833 non-null  object \n 11  danceability              32833 non-null  float64\n 12  energy                    32833 non-null  float64\n 13  key                       32833 non-null  int64  \n 14  loudness                  32833 non-null  float64\n 15  mode                      32833 non-null  int64  \n 16  speechiness               32833 non-null  float64\n 17  acousticness              32833 non-null  float64\n 18  instrumentalness          32833 non-null  float64\n 19  liveness                  32833 non-null  float64\n 20  valence                   32833 non-null  float64\n 21  tempo                     32833 non-null  float64\n 22  duration_ms               32833 non-null  int64  \ndtypes: float64(9), int64(4), object(10)\nmemory usage: 5.8+ MB\n\n\nThe output shows that the columns track_name, track_artist, and track_album_name have 5 null elements (i.e., they only have 32828 elements). Let’s look at the genres and their counts in the dataset.\n\nspotify_songs['playlist_genre'].value_counts()\n\nplaylist_genre\nedm      6043\nrap      5746\npop      5507\nr&b      5431\nlatin    5155\nrock     4951\nName: count, dtype: int64\n\n\nLet us now look at how different genres compare on the basis of each attribute. But first, we notice that the features have wildly different scales. For example, loudness varies from -46.448 to 1.275 whereas tempo ranges from 0 to 1 (see histogram below). Therefore, we must standardize these attributes using the StandardScaler. Furthermore, features such as valence and instrumentalness have very long tails. To convert these attributes to “gaussian” like features, we will use the boxcox class from scipy.\n\nspotify_features = spotify_songs.loc[:,['danceability','energy','loudness','speechiness','acousticness','instrumentalness','liveness','valence','tempo']]\nspotify_features.hist(bins=50, figsize=(12, 8))\nplt.show()\n\n\n\n\nThe following violin plot also describes the relationship between some of the attributes and genres. From the first violin plot, it is evident that rap music has a higher danceability score on average while the most danceable song belongs to the edm genre.\n\nsns.violinplot(x=spotify_songs.playlist_genre,y=spotify_songs.danceability)\nplt.grid()\nplt.xlabel('Genre')\nplt.ylabel('Danceability score')\nplt.show()\n\n\n\n\nWe should also look for any correlations within the features themselves. Ideally, all our features (i.e., attributes) must be independent of each other. However, it may happen that two or more features are highly correlated within themselves. In such a scenario, we will need to drop one of the correlated attributes.\n\nfig, ax = plt.subplots(figsize=(15,10))\nsns.heatmap(spotify_features.corr(), annot=True, cmap='YlGnBu', vmin=-1, vmax=1, center=0, ax=ax)\nplt.title('Linear Correlations between attributes')\nplt.show()\n\n\n\n\nFrom the correlation matrix, we can note that the attributes energy and loudness are highly correlated. Their correlation coefficient is 0.68. Thus, we will drop the loudness attribute."
+  },
+  {
+    "objectID": "posts/post-with-code/index.html#creating-training-and-test-sets",
+    "href": "posts/post-with-code/index.html#creating-training-and-test-sets",
+    "title": "Classification of Spotify songs into genres",
+    "section": "Creating Training and Test Sets",
+    "text": "Creating Training and Test Sets\nNow, we will create training and test sets. We will do this by limiting the test set size to 20 % of the total data set. Since we need an equal distribution of our target labels (i.e., the playlist genres), we will need to stratify the data with respect to the playlist genres.\n\nfrom sklearn.model_selection import train_test_split\n\ntrain_set, test_set = train_test_split(spotify_songs, test_size=0.2, stratify = spotify_songs.playlist_genre,random_state=42)\n\nX_train = train_set.drop('playlist_genre',axis=1)\ny_train = train_set['playlist_genre']\nX_test = test_set.drop('playlist_genre',axis=1)\ny_test = test_set['playlist_genre']"
+  },
+  {
+    "objectID": "posts/post-with-code/index.html#preprocessing-the-data",
+    "href": "posts/post-with-code/index.html#preprocessing-the-data",
+    "title": "Classification of Spotify songs into genres",
+    "section": "Preprocessing the data",
+    "text": "Preprocessing the data\nWe will first drop the loudness attribute since it is highly correlated with the energy attribute.\n\nspotify_songs = spotify_songs.drop('loudness',axis=1)\n\nThe column playlist_subgenre has attributes such as dance pop and pop edm which are subsets of the parent column playlist_genre. Similarly,the track_id, track_name, track_artist, track_popularity, track_album_id, track_album_name, and track_album_release_date are not relevant. Thus, we drop all these columns. Furthermore, as we have seen before, there are null values in the track_name, track_artist , and track_album_name columns. Therefore, we need to drop the corresponding rows as well.\n\nspotify_songs.dropna(subset=['track_name','track_artist','track_album_name'], inplace=True) # Drop null values from the data\nspotify_songs = spotify_songs.loc[:,'playlist_genre':'tempo'] # drop unnecessary columns\nspotify_songs = spotify_songs.drop('playlist_subgenre',axis=1) # drop unnecessary columns\n\nWe can verify that the null values have been dropped by calling the .info() method again.\n\nspotify_songs.info()\n\n&lt;class 'pandas.core.frame.DataFrame'&gt;\nIndex: 32828 entries, 0 to 32832\nData columns (total 11 columns):\n #   Column            Non-Null Count  Dtype  \n---  ------            --------------  -----  \n 0   playlist_genre    32828 non-null  object \n 1   danceability      32828 non-null  float64\n 2   energy            32828 non-null  float64\n 3   key               32828 non-null  int64  \n 4   mode              32828 non-null  int64  \n 5   speechiness       32828 non-null  float64\n 6   acousticness      32828 non-null  float64\n 7   instrumentalness  32828 non-null  float64\n 8   liveness          32828 non-null  float64\n 9   valence           32828 non-null  float64\n 10  tempo             32828 non-null  float64\ndtypes: float64(8), int64(2), object(1)\nmemory usage: 3.0+ MB\n\n\nNext, we will use StandardScaler transformer to standardize our attributes. Notice that the spotify_features dataframe in the following code does not include the loudness attribute.\n\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.preprocessing import MinMaxScaler\nfrom scipy.stats import boxcox\n\nstd_scaler = StandardScaler()\n\nspotify_features = spotify_songs.loc[:,['danceability','energy','speechiness','acousticness','instrumentalness','liveness','valence','tempo']] # collecting all the important features in a dataframe\nspotify_songs.loc[:,['danceability','energy','speechiness','acousticness','instrumentalness','liveness','valence','tempo']] = std_scaler.fit_transform(spotify_features)\n\n# Using boxcox to scale heavy-tailed features\n\nmin_max_scaler = MinMaxScaler()\nspotify_new_features = spotify_songs.loc[:,'speechiness':'liveness']\nspotify_tail_features = min_max_scaler.fit_transform(spotify_new_features)\nspotify_tail_features = pd.DataFrame(spotify_tail_features,columns=spotify_new_features.columns)\ntransformed_acousticness = boxcox(spotify_tail_features.acousticness,0.25) \nspotify_songs.acousticness = transformed_acousticness\ntransformed_liveness = boxcox(spotify_tail_features.acousticness,0.25)\nspotify_songs.liveness = transformed_liveness\ntransformed_instrumentalness = boxcox(spotify_tail_features.instrumentalness,0.2) \nspotify_songs.instrumentalness = transformed_instrumentalness\ntransformed_speechiness = boxcox(spotify_tail_features.speechiness,0.2)\nspotify_songs.speechiness = transformed_speechiness\n\nNow, we can take a look at the feature distributions. As we can see, the attributes are on the same scale and many of them are centered around zero. Most of these distributions are Gaussian.\n\nspotify_features = spotify_songs.loc[:,['danceability','energy','speechiness','acousticness','instrumentalness','liveness','valence','tempo']]\nspotify_features.hist(figsize=(12, 8))\nplt.show()"
+  },
+  {
+    "objectID": "posts/post-with-code/index.html#train-the-models",
+    "href": "posts/post-with-code/index.html#train-the-models",
+    "title": "Classification of Spotify songs into genres",
+    "section": "Train the models",
+    "text": "Train the models\nSince this is a multiclass classification problem, support vector classifiers do not scale very well. Therefore, we will look for other classifiers. First, we’ll try logistic regression.\n\nfrom sklearn.linear_model import LogisticRegression\n\nlog_clf = LogisticRegression(max_iter=1000, random_state=42)\nlog_clf.fit(X_train, y_train); # Train the model\n\nTo measure the performance of the classifier, we will first import the cross_val_score function from scikit learn.\n\nfrom sklearn.model_selection import cross_val_score\n\ncross_val_score(log_clf,X_train,y_train,cv=3,scoring='accuracy')\n\narray([0.46047521, 0.45042266, 0.45807631])\n\n\nFor the 3 validation folds, Logistic Regression predicts the correct genres with 45 % accuracy on average. Let us compare this performance with a dummy classifier.\n\nfrom sklearn.dummy import DummyClassifier\n\ndummy_clf = DummyClassifier()\ndummy_clf.fit(X_train, y_train)\n\ncross_val_score(dummy_clf, X_train, y_train, cv=3,scoring='accuracy')\n\narray([0.18403016, 0.18414439, 0.18403016])\n\n\nThe dummy classifier predicts the correct genre with 18 % accuracy. The Logistic Regression model is a little better than the dummy classifier for our data. Let us use the DecisionTreeClassifier next. We will use RandomizedSeachCV to select the optimum number of max_features in order to produce the best validation score.\n\nfrom sklearn.model_selection import RandomizedSearchCV\nfrom sklearn.tree import DecisionTreeClassifier\nfrom scipy.stats import randint\n\ndecision_tree_clf = DecisionTreeClassifier(random_state=42)\nparam_random = {'max_features':randint(low=2,high=20)}\nrandom_search_tree = RandomizedSearchCV(decision_tree_clf,param_distributions=param_random,n_iter=10,cv=5,scoring='accuracy')\nrandom_search_tree.fit(X_train, y_train)\n\ncross_val_score(random_search_tree, X_train, y_train, cv=3,scoring='accuracy')\n\narray([0.41912269, 0.41089788, 0.41649532])\n\n\nThe DecisionTreeClassifier produces an average accuracy of 41 % on the validation folds. We will import the RandomForestClassifier , which aggregates a large number of decision trees together.\n\nfrom sklearn.ensemble import RandomForestClassifier\n\nrandom_forest_clf = RandomForestClassifier(n_jobs=-1,random_state=42)\nparam_random = [{'n_estimators':randint(low=100, high=500)},{'max_leaf_nodes':randint(low=5,high=20)}]\nrandom_search_forest = RandomizedSearchCV(random_forest_clf,param_distributions=param_random,n_iter=10,cv=3,scoring='accuracy')\nrandom_search_forest.fit(X_train,y_train)\n\ncross_val_score(random_search_forest, X_train, y_train, cv=3,scoring='accuracy')\n\narray([0.53267078, 0.53152844, 0.53015764])"
+  }
+]
