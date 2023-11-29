@@ -8,6 +8,15 @@ listing:
   sort-ui: false
   filter-ui: false
 page-layout: full
+format:
+  html: 
+    embed-resources: true
+    code-copy: true
+    code-link: true
+    code-tools: true
+    theme:
+      dark: darkly
+      light: lightly
+    css: styles.css
 title-block-banner: true
-
 ---
