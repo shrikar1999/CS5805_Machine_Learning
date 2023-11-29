@@ -1,0 +1,181 @@
+---
+title: Probability Theory and Random Variables - Logistic Regression
+author: "Shrikar Banagiri"
+date: "2023-11-06"
+image: "image.jpg"
+execute: 
+  echo: false
+  freeze: true
+---
+
+## Introduction
+
+In this blog, we will explore the probability theory underlying Logistic Regression. Unlike other Normal and Poisson Regression models, Logistic Regression is often used when the target labels are categorical. Thus, Logistic Regression is most suitable for classification problems. For example, let us imagine that we want to predict whether a patient is likely to have a heart attack or not. Therefore, the categorical model value Y :
+
+```{=tex}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{inputenc}
+\usepackage{caption}
+\usepackage{subcaption}
+```
+```{=tex}
+\begin{equation}
+  Y = 
+  \begin{cases}
+    0,  no \hspace{0.1cm} heart \hspace{0.1cm} attack \\
+    1,  heart \hspace{0.1cm} attack
+  \end{cases}
+\end{equation}
+```
+Let us assume that the target Y is dependent on features $X_1$, $X_2$, and $X_3$ which represent the patient age, patient weight, and cholesterol level of the patient.
+
+## Data Distribution Model
+
+In our case, the target variable Y is binary, i.e., it can either take 0 or 1. Thus, we utilize the **Bernoulli probability distribution** model. The probability of patient *i* having a heart attack is denoted by *p~i~*
+
+$$
+Y_{i}|p_{i} \sim Bernoulli(p_{i})
+$$ {#eq-eqn1}
+
+where the expected or the mean value is given as
+
+$$
+E(Y_{i}|p_{i}) = p_{i}
+$$ {#eq-eqn2}
+
+Thus, the expected value of the target variable Y is the probability of Y itself. Furthermore, this probability follows the Bernoulli distribution. Now, the final piece is to describe how the probability of patient *i* is related to the attributes $X_{1i}$, $X_{2i}$, and $X_{3i}$. For simplicity, let us assume, for now, that the probability of heart attack for patient *i* is only dependent on the feature $X_{1i}$. Let us also define a function $F(p_{i})$, which produces a linear relationship between the probability and the feature as shown below.
+
+$$
+F(p_{i}) = \alpha + \beta X_{1i}
+$$ {#eq-eqn3}
+
+The right hand side of @eq-eqn3 is a linear function that can span the entire real space. Therefore, the left hand side also has to span the entire real space. Here's where we introduce the **logit** function. The logit function is defined as the logarithm of the odds of the probability distribution. Thus, the relationship becomes:
+
+$$
+F(p_{i}) = \log{}(\frac{p_{i}}{1 - p_{i}}) = \alpha + \beta X_{1i}
+$$ {#eq-eqn4}
+
+Which on solving further, gives
+
+$$
+odds_{i} = \frac{p_{i}}{1-p_{i}} = e^{\alpha + \beta X_{1i}}
+$$ {#eq-eqn5}
+
+Solving further,
+
+$$
+p_{i} = \frac{e^{\alpha + \beta X_{1i}}}{1 + e^{\alpha + \beta X_{1i}}}
+$$ {#eq-eqn6}
+
+Let us assume that the value of $\alpha$ is - 4 and the value of $\beta$ is 0.1 for our case. Using these values for our heart attack analysis, we can generate the following plots.
+
+```{python}
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+alpha = -4
+beta = 0.1
+x = np.linspace(0,100,100) # Hypothetical patient age data
+linear_fit = alpha + (beta * x) # linear fit model
+log_odds = linear_fit # log of the odds
+odds = np.exp(linear_fit) # odds of heart attack
+prob = np.exp(linear_fit)/(1 + np.exp(linear_fit)) # probability of heart attack
+
+# Plotting
+
+plt.figure(figsize=(15, 3))
+plt.subplot(131)
+plt.plot(x,log_odds,'k-')
+plt.xlabel('Patient age')
+plt.ylabel('Log of the odds of heart attack')
+plt.title('Log of odds v/s Patient age')
+plt.grid()
+plt.subplot(132)
+plt.plot(x,odds,'k-')
+plt.xlabel('Patient age')
+plt.ylabel('Odds of heart attack')
+plt.title('Odds v/s Patient age')
+plt.grid()
+plt.subplot(133)
+plt.plot(x,prob,'k-')
+plt.xlabel('Patient age')
+plt.ylabel('Probability v/s Patient age')
+plt.title('Probability v/s Patient age')
+plt.grid()
+```
+
+The figures show that even though the odds and the probability vary non-linearly with respect to the patient age, the logarithm of odds varies linearly with the patient age. In general, for multiple features $X_{1}$, $X_{2}$, ..., $X_{n}$, we can define the logarithm of odds to be:
+
+$$
+\log{}(\frac{p_{i}}{1 - p_{i}}) = \alpha + \beta X_{1} + \beta_{2} X_2 + ... + \beta_{n} X_{n}
+$$ {#eq-eqn7}
+
+Each new feature added has a multiplicative effect on the odds of heart attack, i.e., adding feature $X_{2}$ will result in multiplication by $e^{\beta_{2}X_{2}}$. The coefficients $\alpha$, $\beta$, ..., $\beta_{n}$ are estimated through a combination of our "prior" knowledge and "posterior" simulations on known datasets.
+
+## Classification Example
+
+In this section, an example classification problem is solved using Logistic Regression. In this example, we will import the `iris` dataset. This is a classic dataset which is used in classification problems. The dataset contains three class, class '0' represents `setosa`, class '1' represents `versicolor`, and class '2' represents `virginica`. These classes depend on the features, `sepal length`, `sepal width`, `petal length`, and `petal width`.
+
+To implement logistic regression on this dataset, let us first import the necessary libraries.
+
+```{python}
+
+#| echo: true
+
+from sklearn import datasets
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+
+iris = datasets.load_iris()
+iris_data = iris.data # get data values
+iris_target = iris.target # target labels
+
+# Display iris target labels
+
+print(iris_target[iris_target == 0].shape) # print the number of setosa target datapoints
+print(iris_target[iris_target == 1].shape) # print the number of versi-color target datapoints
+```
+
+Therefore, the number of setosa and versi-color target datapoints is 50 each. Let us now segregate the iris dataset such that we select only setosa and versi-color target variables. Furthermore, let us look at how the sepal length varies across target variables.
+
+```{python}
+
+#| echo: true
+
+iris_data = iris_data[0:100] # filter only setosa and versi-color target data
+iris_target = iris_target[0:100] # filter only setosa and versi-color target labels
+plt.scatter(iris_data[:,0], iris_target)
+plt.xlabel('Sepal length (cm)')
+plt.ylabel('Target name')
+plt.grid()
+```
+
+Since the target name is categorical and binary (either 0 or 1), we can see that the data is separated. Let us now import the `LogisticRegression` from scikit-learn. Logistic regression works by fitting a logit function to the separated data. If the value corresponding to a given sepal length falls below 0.5, then the model predicts the class as 0 (i.e. setosa). However, when the value corresponding to a given sepal length is greater than 0.5, then the model predicts the class as 1 (i.e., versi-color)
+
+```{python}
+
+#| echo: true
+
+from sklearn.linear_model import LogisticRegression
+from scipy.special import expit
+
+model = LogisticRegression(random_state=42)
+model.fit(iris_data[:,0].reshape(-1,1),iris_target)
+
+# Test the logistic regression model with a test sample
+
+sepal_sample = np.linspace(4.3,7,100) # a random sample of sepal lengths
+target_sample = sepal_sample.reshape(-1,1)*model.coef_ + model.intercept_
+logistic_fit = expit(target_sample)
+
+# Plotting
+plt.scatter(iris_data[:,0],iris_target, c=iris_target,label = "Sepal length")
+plt.plot(sepal_sample,logistic_fit.ravel(),c='blue',label='Logistic regression')
+plt.axhline(.5, color="red", label="Decision threshold")
+plt.legend(loc='lower right')
+plt.grid()
+```

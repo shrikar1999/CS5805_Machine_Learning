@@ -1,0 +1,438 @@
+---
+title: "Linear and Nonlinear Regression"
+author: "Shrikar Banagiri"
+date: "2023-11-08"
+image: "image.jpg"
+execute: 
+  echo: false
+  freeze: true
+---
+
+## Introduction
+
+The [Bike Sharing Dataset](https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset) compiles the hourly and daily counts of rental bikes between 2011 and 2012. There are two .csv files: hour.csv and day.csv. These files have the following 15 features:
+
+-   `dteday`: The date.
+
+-   `season`: season (1 represents winter, 2 represents spring, 3 represents summer, 4 represents fall).
+
+-   `yr`: year (0 represents 2011, 1 represents 2012).
+
+-   `mnth`: month (1 to 12).
+
+-   `hr`: hour (0 to 23).
+
+-   `holiday`: whether day is a holiday or not (0 represents not a holiday, 1 represents a holiday).
+
+-   `weekday`: the day of the week (0 for Sunday and 6 Saturday).
+
+-   `workingday`: if working day, the value is 1; else the value is 0.
+
+-   `weathersit`: 1 represents clear weather, 2 represents mist / mist + broken clouds / mist + few clouds, 3 represents light snow / light rain, 4 represents heavy rain + thunderstorm + ice pallets / snow + fog.
+
+-   `temp`: this represents the normalized temperature in $^{\circ}$C.
+
+-   `atemp`: this represents the normalized "feels like" temperature in $^{\circ}$C.
+
+-   `hum`: Normalized humidity, ranges from 0 - 1.
+
+-   `windspeed`: Normalized windspeed, ranges from 0 - 1.
+
+-   `casual`: the number of casual bikers.
+
+-   `registered`: the number of registered bikers.
+
+-   `cnts`: the total number of casual and registered bikes.
+
+The problem statement is to predict the total number of both casual and registered bikes `cnts` given the values of the rest of the features.
+
+## Importing the dataset
+
+The dataset is hosted on the [UC Irvine Machine Learning Repository](https://archive.ics.uci.edu/). First, we import the libraries required to perform the analysis.
+
+```{python}
+
+#| echo: true 
+
+# Import the libraries
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import urllib.request
+from pathlib import Path
+import os
+import zipfile
+
+# Downloading and opening the dataset
+
+csv_path = Path('datasets/bike+sharing+dataset.zip') # store the dataset in a local folder
+url = 'https://archive.ics.uci.edu/static/public/275/bike+sharing+dataset.zip' # url to download the dataset
+
+if not csv_path.is_file(): # check if the dataset directory exists. 
+  Path("datasets").mkdir(parents=True,exist_ok=True) # Create the directory
+  urllib.request.urlretrieve(url, csv_path)
+  with zipfile.ZipFile(csv_path) as bike_file:
+    bike_file.extractall(path='datasets')
+    
+bike_sharing_day = pd.read_csv(Path('datasets/day.csv')) 
+bike_sharing_hour = pd.read_csv(Path('datasets/hour.csv')) # Store the dataset in a variable
+
+```
+
+## Analyzing the data
+
+Let us survey the data by using the `info()` method below. As we can see, there are no null entries in this dataset.
+
+```{python}
+
+#| echo: true
+
+bike_sharing_hour.info()
+
+```
+
+Let us now look at the counts of the individual dates.
+
+```{python}
+
+#| echo: true
+
+bike_sharing_hour['dteday'].value_counts()
+
+```
+
+As shown in the value counts of the dates, not all hours of all dates are recorded. For example, on 29 October 2012, data for only one hour is available. Furthermore, we need to convert the `dteday` column into a `datetime` format. Furthermore, we will split the dates into separate columns comprising days, months, and years.
+
+```{python}
+
+#| echo: true
+
+bike_sharing_hour['dteday'] = pd.to_datetime(bike_sharing_hour['dteday']) # convert to date time format
+bike_sharing_hour['day'] = bike_sharing_hour['dteday'].dt.day # split into days
+bike_sharing_hour = bike_sharing_hour.drop('dteday',axis=1) # Drop the dteday column
+```
+
+Next, drop the irrelevant and redundant features. The `instant` column just represents an index, `atemp` is just a modification of the `temp` feature, `casual` and `rental` are just subsets of the `cnt` feature. `holiday` and `weekday` are together described by the feature `workingday.` Thus, we will drop all these features.
+
+```{python}
+
+#| echo: true
+bike_sharing_hour = bike_sharing_hour.drop(['instant','holiday','weekday','atemp','casual','registered'],axis=1) # drop the irrelevant columns
+
+```
+
+Let us now look at the correlation matrix for this dataset.
+
+```{python}
+
+#| echo: true
+
+corr_matrix = bike_sharing_hour.corr() # correlation matrix
+corr_matrix['cnt'].sort_values(ascending=False) # see the linear correlation values for the counts feature
+
+```
+
+As shown in the matrix, the `day` feature has a very weak correlation with the `cnt` feature. Thus, we can drop this feature
+
+```{python}
+
+#| echo: true
+
+bike_sharing_hour = bike_sharing_hour.drop('day',axis=1)
+
+```
+
+Let us look at the correlation matrix for our dataframe now.
+
+```{python}
+
+#| echo: true
+
+corr = bike_sharing_hour.corr() # correlation matrix
+sns.heatmap(corr,cmap='coolwarm')
+plt.title('Linear Correlations between attributes')
+plt.show()
+```
+
+From the correlation matrix, we can see that the features `season` and `mnth` are highly correlated with each other. Thus, we can drop one of these features. We will drop the `mnth` feature. Furthermore, as shown in the violinplot below, `season` is very well correlated with the `cnt` . Season 3 (Summer) has the highest number of median bike rentals.
+
+```{python}
+
+#| echo: true
+
+bike_sharing_hour = bike_sharing_hour.drop('mnth',axis=1) # drop the month feature from the dataset
+
+```
+
+```{python}
+
+sns.violinplot(x=bike_sharing_hour.season,y=bike_sharing_hour.cnt)
+plt.grid()
+plt.xlabel('Season')
+plt.ylabel('Number of rental bikes')
+plt.show()
+```
+
+Since we have categorical attributes in our dataset, we will need to do one hot encoding as shown below.
+
+```{python}
+
+#| echo: true
+
+from sklearn.preprocessing import OneHotEncoder
+
+cat_encoder = OneHotEncoder()
+bike_cats = bike_sharing_hour[['season','weathersit']] # categorical columns segregation
+cat_array_encoded = cat_encoder.fit_transform(bike_cats)
+bike_cats_encoded = pd.DataFrame(cat_array_encoded.toarray(),columns=cat_encoder.get_feature_names_out()) # encoded dataframe
+
+frames = [bike_sharing_hour, bike_cats_encoded]
+bike_sharing_hour_encoded = pd.concat(frames,axis=1) # encode the categorical variable in the original data frame
+bike_sharing_hour_encoded = bike_sharing_hour_encoded.drop(['season','weathersit'],axis=1) # drop redundant columns
+```
+
+Let us look at the distributions of the non-categorical features in the dataset.
+
+```{python}
+
+#| echo: true
+
+bike_features = bike_sharing_hour_encoded[['temp','hum','windspeed']] # non-categorical features in the DataFrame
+bike_features.hist(bins=50) # histogram
+
+```
+
+As we can see from the distributions, the `temp` feature has a gaussian like distribution whereas `hum` and `windspeed` are not gaussian. Thus, we will use the `StandardScaler` and `boxcox` transformer were used to transform these features.
+
+```{python}
+
+#| echo: true
+
+from sklearn.preprocessing import StandardScaler
+from scipy.stats import boxcox
+from sklearn.preprocessing import MinMaxScaler
+
+min_max_scaler = MinMaxScaler(feature_range=(1,2))
+std_scaler = StandardScaler()
+
+bike_sharing_hour_encoded[['windspeed']] = min_max_scaler.fit_transform(bike_sharing_hour_encoded[['windspeed']])
+bike_sharing_hour_encoded[['windspeed']] = boxcox(bike_sharing_hour_encoded[['windspeed']],0)
+bike_sharing_hour_encoded[['hum']] = boxcox(bike_sharing_hour_encoded[['hum']],0.5) # boxcox transform to scale hum feature
+bike_sharing_hour_encoded[['temp']] = std_scaler.fit_transform(bike_sharing_hour_encoded[['temp']])
+bike_sharing_hour_encoded[['hum']] = std_scaler.fit_transform(bike_sharing_hour_encoded[['hum']])
+bike_sharing_hour_encoded[['windspeed']] = std_scaler.fit_transform(bike_sharing_hour_encoded[['windspeed']])# Standardize the features
+
+bike_features = bike_sharing_hour_encoded[['temp','hum','windspeed']]
+bike_features.hist(bins=50) # histogram
+
+```
+
+The histograms now show a fairly gaussian distribution except for a few outliers in the `hum` feature. Let us remove these outliers.
+
+```{python}
+
+#| echo: true
+
+hum_outliers = bike_sharing_hour_encoded[bike_sharing_hour_encoded.hum == -6.0] # outliers in the humidity features
+bike_new = bike_sharing_hour_encoded.merge(hum_outliers,how='left',indicator=True) 
+bike_new = bike_new[bike_new['_merge']=='left_only']
+
+bike_new = bike_new.drop(['_merge'],axis=1)
+bike_sharing_hour_encoded = bike_new # removed humidity outliers
+
+bike_features = bike_sharing_hour_encoded[['temp','hum','windspeed']]
+bike_features.hist(bins=50) # plot histogram again
+```
+
+## Creating Training and Test sets
+
+Now, let us create the training and test sets as shown below.
+
+```{python}
+
+#| echo: true
+
+from sklearn.model_selection import train_test_split
+
+train_set, test_set = train_test_split(bike_sharing_hour_encoded,test_size=0.2,random_state=42) # split the training and test sets
+
+X_train = train_set.drop('cnt',axis=1) # drop the target label from the training set
+y_train = train_set['cnt'] # target label
+X_test = test_set.drop('cnt',axis=1) # drop the target label from the test set
+y_test = test_set['cnt'] # target label
+```
+
+## Training the models
+
+For this regression problem, let us use linear regression and non-linear regression models. Let us first try the simplest regression, the `LinearRegression`.
+
+```{python}
+
+#| echo: true
+
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import cross_val_score
+
+lin_reg = LinearRegression() 
+lin_reg.fit(X_train,y_train) # Train the model
+
+-cross_val_score(lin_reg,X_train,y_train,cv=5,scoring='neg_root_mean_squared_error')
+
+```
+
+For five-fold cross validation, `LinearRegression` produces a root mean squared error (RMSE) of about 140 on average. Let us look at the learning curve to see if the model is overfitting or underfitting the training data.
+
+```{python}
+
+#| echo: true
+
+# import learning_curve to check if the model is overfitting or underfitting
+
+from sklearn.model_selection import learning_curve
+
+train_sizes, train_scores, valid_scores = learning_curve(LinearRegression(), X_train, y_train, train_sizes=np.linspace(0.001, 1.0, 40), cv=5, scoring="neg_root_mean_squared_error") # learning curve for different test sizes
+
+train_errors = -train_scores.mean(axis=1)
+valid_errors = -valid_scores.mean(axis=1)
+
+plt.figure(figsize=(6, 4)) # plot the learning curve
+plt.plot(train_sizes, train_errors, "r-+", linewidth=2, label="train")
+plt.plot(train_sizes, valid_errors, "b-", linewidth=3, label="valid")
+
+plt.xlabel("Training set size")
+plt.ylabel("RMSE")
+plt.grid()
+plt.legend(loc="upper right")
+plt.show()
+    
+
+```
+
+The learning curve plot shows a classic case of the model underfitting the data. When the training set data size is low, the data can be described fairly accurately by a linear regression model. Therefore, the RMSE is low for lower training set size. However, as the training set data size increases, the value of RMSE steadily increases until it reaches a constant value. At the point, adding or removing the training data does not make the model better or worse. Similarly, for the validation sets, if the size of the data set is low, the validation error is very high. However, as more data is added, the validation drops down until it reaches a constant value.
+
+Since the model is underfitting, we will implement a higher degree polynomial regressor. We will import `PolynomialFeatures` from scikit-learn.
+
+```{python}
+
+#| echo: true
+
+from sklearn.preprocessing import PolynomialFeatures
+
+poly_features = PolynomialFeatures(degree=2,include_bias=False)
+X_poly_train = poly_features.fit_transform(X_train) # transform feature labels into the polynomial form
+lin_reg.fit(X_poly_train,y_train) # fit linear regression on the polynomially transformed variables
+
+-cross_val_score(lin_reg,X_poly_train,y_train,cv=5,scoring='neg_root_mean_squared_error') # the cross validation score
+```
+
+We can see that the polynomial regressor has performed marginally better than the linear regressor with an average cross val score of 120 across the 5 folds. Let us plot the learning curve to see whether the model is overfitting or underfitting.
+
+```{python}
+
+# import learning_curve to check if the model is overfitting or underfitting
+
+
+train_sizes, train_scores, valid_scores = learning_curve(lin_reg, X_poly_train, y_train, train_sizes=np.linspace(0.001, 1.0, 40), cv=5, scoring="neg_root_mean_squared_error") # learning curve for different test sizes
+
+train_errors = -train_scores.mean(axis=1)
+valid_errors = -valid_scores.mean(axis=1)
+
+plt.figure(figsize=(6, 4)) # plot the learning curve
+plt.plot(train_sizes, train_errors, "r-+", linewidth=2, label="train")
+plt.plot(train_sizes, valid_errors, "b-", linewidth=3, label="valid")
+
+plt.xlabel("Training set size")
+plt.ylabel("RMSE")
+plt.grid()
+plt.legend(loc="upper right")
+plt.show()
+```
+
+As we can see from the learning curve, the regression model is still underfitting. Therefore, let us use nonlinear regressors instead. We will use `DecisionTreeRegressor` first. We will use `RandomizedSearchCV` to tune the hyperparameters.
+
+```{python}
+
+#| echo: true
+
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import RandomizedSearchCV
+from scipy.stats import randint
+
+decision_reg = DecisionTreeRegressor(random_state=42)
+param_random = [{'max_depth':randint(low=2,high=20)},{'min_samples_leaf':randint(low=2,high=20)}] # hyperparameter tuning
+rand_dec_reg = RandomizedSearchCV(decision_reg,param_distributions=param_random,scoring='neg_root_mean_squared_error',n_iter=10,random_state=42) 
+rand_dec_reg.fit(X_train,y_train) # training the decision tree regressor
+
+-cross_val_score(rand_dec_reg,X_train,y_train,cv=5,scoring='neg_root_mean_squared_error')
+```
+
+The cross validation score for this model is close to 60 on average across the five validation folds. This score is much better than the linear and polynomial regressors. Let us look at the learning curve for this model.
+
+```{python}
+
+train_sizes, train_scores, valid_scores = learning_curve(rand_dec_reg, X_train, y_train, train_sizes=np.linspace(0.001, 1.0, 40), cv=5, scoring="neg_root_mean_squared_error") # learning curve for different test sizes
+
+train_errors = -train_scores.mean(axis=1)
+valid_errors = -valid_scores.mean(axis=1)
+
+plt.figure(figsize=(6, 4)) # plot the learning curve
+plt.plot(train_sizes, train_errors, "r-+", linewidth=2, label="train")
+plt.plot(train_sizes, valid_errors, "b-", linewidth=3, label="valid")
+
+plt.xlabel("Training set size")
+plt.ylabel("RMSE")
+plt.grid()
+plt.legend(loc="upper right")
+plt.show()
+```
+
+The validation error decreases as the training set size increases but the validation error never approaches the training error. Thus, the model seems to be slightly overfitting. Let us now implement the `RandomForestRegressor`.
+
+```{python}
+
+#| echo: true
+
+from sklearn.ensemble import RandomForestRegressor
+
+rand_reg = RandomForestRegressor(random_state=42)
+param_random = [{'n_estimators':randint(low=20,high=100)}] # hyperparameter tuning
+random_rand_reg = RandomizedSearchCV(rand_reg,param_distributions=param_random,scoring='neg_root_mean_squared_error',n_iter=10,random_state=42) 
+random_rand_reg.fit(X_train,y_train) # training the decision tree regressor
+
+-cross_val_score(random_rand_reg,X_train,y_train,cv=3,scoring='neg_root_mean_squared_error')
+```
+
+The `RandomForestRegressor` produces a cross validation score of 50 on average across the three validation folds. Thus, the `RandomForestRegressor` performs the best among all the models tested here. Let us look at the root mean log squared error (RMLSE) for the test set using this model.
+
+```{python}
+
+#| echo: true
+
+from sklearn.metrics import mean_squared_log_error
+
+y_pred = random_rand_reg.predict(X_test) # predictions on the test set
+np.sqrt(mean_squared_log_error(y_pred,y_test))
+
+```
+
+The RMLSE of the `RandomForestRegressor` is 0.386.
+
+## Feature Importances
+
+Let us look at how the RandomForestRegressor weighs the features in predictions. As shown in the bar plot below, the hour of the day is the most important feature for the Random Forest model.
+
+```{python}
+
+#| echo: true
+
+importances = random_rand_reg.best_estimator_.feature_importances_
+plt.title('Feature Importances for the Random Forest Model')
+plt.barh(range(len(importances)), importances, color='g', align='center')
+plt.yticks(range(len(importances)), X_train.columns)
+plt.xlabel('Relative Weights')
+plt.grid()
+plt.show()
+
+```

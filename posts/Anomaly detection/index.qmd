@@ -1,0 +1,290 @@
+---
+title: "Anomaly Detection: Credit Card Fraud Analysis "
+author: "Shrikar Banagiri"
+date: "2023-11-28"
+image: "image.jpg"
+execute: 
+  echo: false
+  freeze: true
+---
+
+## Introduction
+
+The [credit card fraud detection dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud/data) comprises of all the transactions made by credit card holders in the European Union in September 2013. Out of the total 284,807 transactions that have taken place, only 492 transactions are fraudulent. The dataset contains the following features: `Time`, which indicates the number of transactions that elapsed between the current transaction and the first transaction in the dataset, `V1`, ..., `V28` are all anonymous features obtained through principal component analysis. `Amount` indicates the transaction amount and `Class` is the outcome which set to 1 in case of fraud and 0 in case there is no fraud.
+
+## Importing the dataset
+
+First, we import the libraries required to perform the initial data analysis. The dataset, hosted on [Kaggle](https://www.kaggle.com/), is imported and stored in the variable called `credit_card`.
+
+```{python}
+
+#| echo: true 
+
+# Import the libraries
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import urllib.request
+from pathlib import Path
+import os
+import zipfile
+
+# Downloading and opening the dataset
+
+csv_path = Path('datasets/archive.zip') # store the dataset in a local folder
+url = 'https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud/download?datasetVersionNumber=3' # url to download the dataset
+
+if not csv_path.is_file(): # check if the dataset directory exists. 
+  Path("datasets").mkdir(parents=True,exist_ok=True) # Create the directory
+  urllib.request.urlretrieve(url, csv_path)
+  with zipfile.ZipFile(csv_path) as credit_file:
+    credit_file.extractall(path='datasets')
+    
+credit_card = pd.read_csv(Path('datasets/creditcard.csv')) # Store the dataset in a variable
+```
+
+## Analyzing the data
+
+Let us take a glance at the dataset using the `head()` method.
+
+```{python}
+
+#| echo: true
+
+credit_card.head()
+
+```
+
+Let us explore further by using the `describe()` method. This gives us an idea of the distribution of the column values.
+
+```{python}
+
+#| echo: true
+
+credit_card.describe()
+
+```
+
+Let us look at the non-null values using the `info()` method.
+
+```{python}
+
+#| echo: true
+
+credit_card.info()
+```
+
+We can see that there are no null values in the dataset and all the classes are either integers or float values. Let us also look at how the classes are distributed.
+
+```{python}
+
+#| echo: true
+
+credit_card.Class.value_counts()
+```
+
+As we can see, the dataset has a high degree of **class imbalance**. Therefore, we have to scale the features such that they are robust to outliers. Thus, we will import the `RobustScaler` class.
+
+```{python}
+
+#| echo: true
+
+from sklearn.preprocessing import RobustScaler
+
+columns = [columns for columns in credit_card.columns if columns not in ['Time','Class']] # columns to scale w.r.t outliers
+
+for cols in columns:
+  robust_scaler = RobustScaler()
+  credit_card[cols] = robust_scaler.fit_transform(credit_card[cols].values.reshape(-1,1)) # reshape the columns such that they are robust to outliers
+
+```
+
+Let us now see the linear correlations between various features.
+
+```{python}
+
+#| echo: true
+
+corr = credit_card.corr() # correlation matrix
+
+fig, ax = plt.subplots(figsize=(50,50))
+sns.heatmap(corr, annot=True, cmap='YlGnBu', vmin=-1, vmax=1, center=0, ax=ax)
+plt.title('Linear Correlations between attributes')
+plt.show()
+```
+
+As we can see, there is almost no correlation between `V1`,....,`V28`. There is some negative correlation between `Amount` and `V2`, but it is not really significant.
+
+Now, let us split the target and the feature columns in our dataset.
+
+```{python}
+
+#| echo: true
+
+columns = [columns for columns in credit_card.columns if columns not in ['Class']] # Select feature columns
+
+X = credit_card[columns] # feature columns
+y = credit_card['Class'] # target columns
+```
+
+## Dimensionality Reduction
+
+We will perform dimensionality reduction on this dataset by using Principal Component Analysis. We will do dimensionality reduction by taking only the 3 components.
+
+```{python}
+
+#| echo: true
+
+from sklearn.decomposition import PCA
+
+pca = PCA(n_components=3, random_state=42)
+
+X_reduced = pca.fit_transform(X) # fit and transform the PCA
+X_reduced = pd.DataFrame(X_reduced,columns=['pca1','pca2','pca3']) # make a dataframe out of X_reduced
+X_reduced['Class'] = credit_card['Class'] # Add the Class feature to the PCA reduced dataset 
+
+```
+
+## Anomaly/Outlier Detection
+
+Since this is a high-dimensional dataset, we can try using the `IsolationForest`algorithm.
+
+```{python}
+
+import warnings
+
+# Settings the warnings to be ignored 
+
+warnings.filterwarnings('ignore') 
+```
+
+```{python}
+
+#| echo: true
+
+from sklearn.ensemble import IsolationForest
+
+frauds = credit_card[credit_card['Class'] == 1] # number of frauds
+valids = credit_card[credit_card['Class'] == 0] # number of valid classes
+fraction_frauds = len(frauds)/len(credit_card) # fraction of frauds
+
+isf = IsolationForest(max_samples=len(credit_card),contamination=fraction_frauds,random_state=42) # Isolation forest
+
+isf.fit(X) # fit the randomized search 
+```
+
+Now, let us view the accuracy_source of the Isolation Forest algorithm. The algorithm returns 1 if the instance is not an outlier. The algorithm returns -1 if the instance is an outlier. We need to replace these labels such that they match the `Class` attribute.
+
+```{python}
+
+#| echo: true
+
+from sklearn.metrics import accuracy_score
+
+y_pred = isf.predict(X) # Predictions from the Isolation Forest Algorithm
+
+# Reassign labels
+
+y_pred[y_pred == 1] = 0 # Instance is not an outlier
+y_pred[y_pred == -1] = 1 # Instance is an outlier
+
+accuracy_score(y_pred, y)
+```
+
+However, due to the high class imbalance, we can't be sure if the model is actually doing a good job. Let us see how many outliers the Isolation Forest algorithm correctly identified.
+
+```{python}
+
+#| echo: true
+
+credit_card['Isolation_forest_pred'] = y_pred # Add a column for the predictions
+credit_card['Isolation_forest_pred'].value_counts()
+```
+
+Let us compare the classes reported by the algorithm with the classes in the dataset.
+
+```{python}
+
+#| echo: true
+
+credit_card["Class"].value_counts()
+```
+
+The algorithm predicts the correct number of overall outliers. Let us now verify how many individual outliers the algorithm correctly predicted.
+
+```{python}
+
+#| echo: true
+
+len(credit_card[(credit_card['Class'] == 1) & (credit_card['Isolation_forest_pred'] == 1)]) # check individual outliers which were predicted correctly 
+```
+
+Therefore, only 153 outliers have been correctly identified. We can get a better sense of the predictions by looking at the confusion matrix below.
+
+```{python}
+
+#| echo: true
+
+# plot a confusion matrix for the dataset
+
+from sklearn.model_selection import cross_val_predict
+
+y_test_cm = y.copy() # use a new y with changed labels
+y_test_cm[y_test_cm == 1] = -1 # change labels to match those given by the Isolation Forest
+y_test_cm[y_test_cm == 0] = 1
+
+
+
+y_cm_pred = cross_val_predict(isf,X,y_test_cm,cv=3)
+
+from sklearn.metrics import confusion_matrix
+
+cm = confusion_matrix(y_test_cm, y_cm_pred)
+cm
+```
+
+As shown in the confusion matrix, the **type I** errors, i.e., 307 instances are classified as false positives (i.e., falsely classified as anomalies) across the three validation folds. Thus, the percentage of anomalies correctly predicted is only **37.6 %**, whereas the accuracy score is **99.7 %**. The precision and recall for this algorithm is computed by using the `classification_report` metric from scikit-learn.
+
+```{python}
+
+#| echo: true
+
+from sklearn.metrics import classification_report
+
+print(classification_report(y,y_pred))
+```
+
+Let us now compare Isolation Forest with another algorithm, `LocalOutlierFactor`. The local outlier factor is an unsupervised anomaly detection algorithm which detects any deviation in the local density as compared to the neighbors.
+
+```{python}
+
+#| echo: true
+
+from sklearn.neighbors import LocalOutlierFactor
+
+lco = LocalOutlierFactor(n_neighbors = 20, contamination = fraction_frauds) # local outlier
+
+y_local_pred = lco.fit_predict(X)
+
+# Reassign labels
+
+y_local_pred[y_local_pred == 1] = 0 # Instance is not an outlier
+y_local_pred[y_local_pred == -1] = 1 # Instance is an outlier
+
+accuracy_score(y_local_pred,y)
+```
+
+Now, let us look at the classification report for this algorithm.
+
+```{python}
+
+#| echo: true
+
+print(classification_report(y,y_local_pred))
+```
+
+This algorithm also produces a similar accuracy score (**99.6 %**) to the Isolation Forest. However, the precision and recall scores for the Local Outlier Fraction are much lower (**2 %**) as compared to 30 % for the Isolation Forest.
+
+The poor precision and recall scores for both the algorithms are due to the high class imbalance in the dataset. Either we need to include a greater amount of training data or we need to look for better nonlinear unsupervised models to improve the performance.

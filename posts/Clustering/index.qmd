@@ -1,0 +1,546 @@
+---
+title: Clustering of Customer Personality Analysis Data
+author: "Shrikar Banagiri"
+date: "2023-11-24"
+image: "image.jpg"
+execute: 
+  echo: false
+  freeze: true
+---
+
+## Introduction
+
+The [Customer Personality Analysis dataset](https://www.kaggle.com/datasets/imakash3011/customer-personality-analysis) contains various different features to aid a company in customer segmentation. Customer segmentation is used to cluster customers into different categories based on their demographic, lifestyle, behavior, and so on. The dataset, which is hosted on [Kaggle](https://www.kaggle.com/), has the following features:
+
+-   `Year_Birth`: Customer's year of birth.
+
+-   `Education`: Customer's education level.
+
+-   `Marital_Status`: Customer's marital status.
+
+-   `Income`: Customer's yearly household income.
+
+-   `Kidhome`: Number of kids at the customer's home.
+
+-   `Teenhome`: Number of teenagers at the customer's home.
+
+-   `Dt_Customer`: Date on which the customer enrolled with the company.
+
+-   `Recency`: Number of days since the customer's last purchase.
+
+-   `MntWines`: Amount of money spent on wines in the last two years.
+
+-   `MntFruits`: Amount of money spent on fruits in the last two years.
+
+-   `MntMeatProducts`: Amount of money spent on meat in the last two years.
+
+-   `MntFishProducts`: Amount of money spent on fish in the last two years.
+
+-   `MntSweetProducts`: Amount of money spent on sweets in the last two years.
+
+-   `MntGoldProds`: Amount of money spent on gold in the last two years.
+
+-   `NumDealsPurchases`: Number of purchases made with a discount
+
+-   `AcceptedCmp1`: 1 if the customer accepted the offer in the 1st campaign, 0 otherwise
+
+-   `AcceptedCmp2`: 1 if the customer accepted the offer in the 2nd campaign, 0 otherwise
+
+-   `AcceptedCmp3`: 1 if the customer accepted the offer in the 3rd campaign, 0 otherwise
+
+-   `AcceptedCmp4`: 1 if the customer accepted the offer in the 4th campaign, 0 otherwise
+
+-   `AcceptedCmp5`: 1 if the customer accepted the offer in the 5th campaign, 0 otherwise
+
+-   `Response`: 1 if the customer accepted the offer in the last campaign, 0 otherwise
+
+Given these features, we want to perform clustering to split the data into customer segments.
+
+## Importing the dataset
+
+First, we import the libraries required to perform the initial data analysis. Next, let us store the dataset in a new variable, `customer_data`.
+
+```{python}
+
+#| echo: true
+
+# Import the libraries
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import urllib.request
+from pathlib import Path
+import os
+import zipfile
+
+# Downloading and opening the dataset
+
+csv_path = Path('datasets/archive.zip') # store the dataset in a local folder
+url = 'https://www.kaggle.com/datasets/imakash3011/customer-personality-analysis/download?datasetVersionNumber=1' # url to download the dataset
+
+if not csv_path.is_file(): # check if the dataset directory exists. 
+  Path("datasets").mkdir(parents=True,exist_ok=True) # Create the directory
+  urllib.request.urlretrieve(url, csv_path)
+  with zipfile.ZipFile(csv_path) as customer_file:
+    customer_file.extractall(path='datasets')
+    
+customer_data = pd.read_csv(Path('datasets/marketing_campaign.csv')) # Store the dataset in a variable
+```
+
+## Analyzing the Data
+
+Let us look at the dataset by using the `head()` method.
+
+```{python}
+
+#| echo: true
+
+customer_data.head()
+```
+
+Let's look at the non-null entries in the dataset using the `info()` method below.
+
+```{python}
+
+#| echo: true
+
+customer_data.info()
+```
+
+As we can see in the dataset, the `Income` column has a few null values. Let us use the `SimpleImputer` class from scikit-learn to replace the null values with the column median.
+
+```{python}
+
+#| echo: true
+
+from sklearn.impute import SimpleImputer
+
+imputer = SimpleImputer(strategy='median')
+
+customer_data['Income'] = imputer.fit_transform(customer_data[['Income']]) # Replace the 'Income' column null values with median
+```
+
+Now, let us look at the customer data using the `info()` method.
+
+```{python}
+
+#| echo: true
+
+customer_data.info()
+
+```
+
+We can now see that there are no null values in the dataset. Let us now look at the 'date' variables. Instead of using `Year_Birth`, perhaps it is better to use the customer age. Furthermore, let us convert the `Dt_Customer` feature to the 'datetime' format and create a `Num_Yrs_Customer` column which represents the number of years that the person has been a customer.
+
+```{python}
+
+#| echo: true
+
+from datetime import date
+from datetime import datetime
+
+customer_data['Age'] = 2023 - customer_data['Year_Birth'] # Customer Age
+customer_data.drop('Year_Birth',axis=1,inplace=True) # Drop the Birth Year from the dataset
+
+customer_data['Dt_Customer'] = pd.to_datetime(customer_data['Dt_Customer'], format='%d-%m-%Y')
+customer_data['Num_Yrs_Customer'] = pd.Timestamp('now').year - customer_data['Dt_Customer'].dt.year # number of years that the person has been a customer
+customer_data.drop('Dt_Customer',axis=1,inplace=True) # Drop the Dt_Customer column
+```
+
+Now, let us do some more feature engineering by creating new columns. We observe that there are many different expenses such as `MntWines` , `MntFruits` , and so on. We will now add another column called `Total_Spending` which sums up the total expenditure for the past two years. We will create another column called `Num_Accept_Cmps` which adds up all the campaigns that have been accepted by the customer.
+
+```{python}
+
+#| echo: true
+
+customer_data['Total_Spending'] = customer_data['MntFishProducts'] + customer_data['MntFruits'] + customer_data['MntGoldProds'] + customer_data['MntMeatProducts'] + customer_data['MntSweetProducts'] + customer_data['MntWines'] # create Total_Spending column
+
+customer_data['Num_Accept_Cmps'] = customer_data['AcceptedCmp1'] + customer_data['AcceptedCmp2'] + customer_data['AcceptedCmp3'] + customer_data['AcceptedCmp4'] + customer_data['AcceptedCmp5'] + customer_data['Response'] # create the Num_Accept_Cmps column
+```
+
+The `Marital_Status` feature has many categories such as Married, Together, Single, Divorced, Widow, Alone, Absurd, and YOLO.
+
+```{python}
+
+#| echo: true
+
+customer_data.Marital_Status.value_counts()
+
+```
+
+It would be beneficial if we could reduce the number of categories by clubbing some of them together. For example, Alone, Absurd, Widow, Divorced, and YOLO would fall under the category of 'Alone' (which can be represented by 0). The rest of the columns can be replaced by 1. Furthermore, let us add a column called `Parent` whose value is 0 if there are no kids or teenagers. We will also add a column called `Family_members` which accounts for the total number of members in the household. Lastly, we will drop all the redundant columns from the dataset.
+
+```{python}
+
+#| echo: true
+
+# Replace redundant categories in marital status
+
+customer_data['Marital_Status'] = customer_data["Marital_Status"].replace({"Married":1, "Together":1, "Absurd":0, "Widow":0, "YOLO":0, "Divorced":0, "Single":0,"Alone":0})
+
+# Add parent feature
+
+customer_data['Parent'] = np.where(customer_data.Kidhome + customer_data.Teenhome > 0, 1, 0)
+
+# Add Family members feature
+
+customer_data['Family_members'] = customer_data.Marital_Status.replace({0:1,1:2}) + customer_data.Kidhome + customer_data.Teenhome
+
+# Drop remaining unnecessary columns
+
+customer_data.drop(['Z_CostContact','Z_Revenue','ID'],axis = 1,inplace=True)
+```
+
+Let us look at the histograms of some of the features.
+
+```{python}
+
+#| echo: true
+
+# plotting some of the features
+
+to_plot = ['Income','Recency','Age','Total_Spending'] 
+
+customer_features = customer_data[to_plot]
+customer_features.hist(bins=50, figsize=(12, 12))
+plt.show()
+```
+
+From the histograms, we can observe that both `Income` and `Age` features have outliers that need to be removed.
+
+```{python}
+
+#| echo: true
+
+# Remove outliers from Income and Age
+
+customer_data = customer_data[(customer_data['Age'] < 100)] # Restrict Age values to below 100
+customer_data = customer_data[(customer_data['Income'] < 150000) ] # Restrict Income values to below 150000
+```
+
+Now, let us plot the histograms. As we can see, all the outliers have been removed.
+
+```{python}
+
+# plotting some of the features
+
+to_plot = ['Income','Recency','Age','Total_Spending'] 
+
+customer_features = customer_data[to_plot]
+customer_features.hist(bins=50, figsize=(12, 12))
+plt.show()
+```
+
+Now, let us plot the correlation matrix for the dataset.
+
+```{python}
+
+#| echo: true
+
+customer_corr = customer_data.drop('Education',axis = 1) # Drop non-integer data
+fig, ax = plt.subplots(figsize=(20, 20))
+sns.heatmap(customer_corr.corr(), annot=True, cmap='YlGnBu', center=0, ax=ax)
+plt.title('Linear Correlations between attributes')
+plt.show()
+```
+
+As we can see from the correlation matrix, there are multiple features which are highly correlated with other features. Therefore, we will do dimensionality reduction by using Principal Component Analysis.
+
+But first, let us convert the remaining categorical variable Education to numerical values. To do this, let us use `LabelEncoder`.
+
+```{python}
+
+#| echo: true
+
+from sklearn.preprocessing import LabelEncoder
+
+lencoder = LabelEncoder() # label encoder
+
+customer_data['Education'] = lencoder.fit_transform(customer_data['Education'])
+```
+
+Let us standardize the features using `StandardScaler`.
+
+```{python}
+
+#| echo: true
+
+from sklearn.preprocessing import StandardScaler
+
+std_scaler = StandardScaler()
+
+# Segregate features which are supposed to be scaled
+
+to_scale = ['Income','Recency','MntWines','MntFruits','MntMeatProducts','MntFishProducts','MntSweetProducts','MntGoldProds','NumDealsPurchases', 'NumWebPurchases', 'NumCatalogPurchases',
+'NumStorePurchases', 'NumWebVisitsMonth','Age', 'Num_Yrs_Customer', 'Total_Spending',
+'Num_Accept_Cmps', 'Parent', 'Family_members']
+
+customer_data[to_scale] = std_scaler.fit_transform(customer_data[to_scale]) # Scale the columns
+```
+
+Let us plot the histograms of the same representative features again.
+
+```{python}
+
+# plotting some of the features
+
+to_plot = ['Income','Recency','Age','Total_Spending'] 
+
+customer_features = customer_data[to_plot]
+customer_features.hist(bins=50, figsize=(12, 12))
+plt.show()
+```
+
+We can see that while the features `Income` and `Age` have gaussian like distributions and the recency feature is almost a perfect rectangle, the `Total_Spending` feature has a very long tail. Let us use the `boxcox` scaler to transform this feature.
+
+```{python}
+
+#| echo: true
+
+from scipy.stats import boxcox
+
+customer_data['Total_Spending'] = boxcox(customer_data['Total_Spending'],0) # Take the logarithm of the feature
+
+# plot histograms again
+
+to_plot = ['Income','Recency','Age','Total_Spending'] 
+
+customer_features = customer_data[to_plot]
+customer_features.hist(bins=50, figsize=(12, 12))
+plt.show()
+```
+
+Let us remove the outliers from this `Total_Spending` feature.
+
+```{python}
+
+#| echo: true
+
+# Remove outliers from Total_Spending
+
+customer_data = customer_data[(customer_data['Total_Spending'] > -6)] # Restrict Total_Spending values to above -6
+
+```
+
+As we can see now, the `Total_Spending` feature has a better-looking distribution.
+
+```{python}
+
+# plot histograms again
+
+to_plot = ['Income','Recency','Age','Total_Spending'] 
+
+customer_features = customer_data[to_plot]
+customer_features.hist(bins=50, figsize=(12, 12))
+plt.show()
+```
+
+## Dimensionality Reduction
+
+Since the dataset has many features, we choose to reduce the dimensionality of our dataset using Principal Component Analysis (PCA). We will import the PCA class from scikit-learn. The number of components will be determined using `RandomizedSearchCV` for each classifier.
+
+```{python}
+
+#| echo: true
+
+# Import the PCA class
+
+from sklearn.decomposition import PCA
+```
+
+## Clustering
+
+Let us first import the `KMeans` algorithm from scikit-learn. Next, let us use `RandomizedSearchCV` to find the best estimator with the optimal number of PCA components and KMeans clusters.
+
+```{python}
+
+import warnings
+
+# Settings the warnings to be ignored 
+warnings.filterwarnings('ignore') 
+```
+
+```{python}
+
+#| echo: true
+
+from sklearn.cluster import KMeans
+from sklearn.pipeline import make_pipeline
+from sklearn.model_selection import RandomizedSearchCV
+
+kmeans_clf = make_pipeline(PCA(random_state=42),KMeans(random_state=42,n_init=10)) # Import pipeline for dimensionality reduction and clustering
+param_distrib = {"pca__n_components":np.arange(3,20),"kmeans__n_clusters":np.arange(2,10)} # random parameter distribution
+
+rnd_search = RandomizedSearchCV(kmeans_clf, param_distrib, n_iter=10, cv=3,random_state=42)
+
+rnd_search.fit(customer_data)
+```
+
+We can now see what the best estimator is. As we can see, the optimal number of PCA components is 5 and optimal number of KMeans clusters is 3.
+
+```{python}
+
+#| echo: true
+
+rnd_search.best_estimator_
+
+```
+
+Therefore, we will use these parameters henceforth.
+
+```{python}
+
+#| echo: true
+
+km = KMeans(n_clusters=3, random_state=42,n_init=10) # Import KMeans clustering
+pca = PCA(n_components=5, random_state=42) # Import PCA
+
+customer_data_reduced = pca.fit_transform(customer_data) # reduce pca components
+km.fit(customer_data_reduced)
+```
+
+Let us look at the `silhouette_score` for the KMeans cluster.
+
+```{python}
+
+#| echo: true
+
+from sklearn.metrics import silhouette_score
+
+silhouette_score(customer_data_reduced,km.labels_)
+
+```
+
+The silhouette score for this clustering algorithm is around 0.26. Let us plot the silhouette diagram to investigate further.
+
+```{python}
+
+#| echo: true
+
+# Plotting silhouette coefficients
+
+kmeans_per_k = [KMeans(n_clusters=k, n_init=10, random_state=42).fit(customer_data_reduced) for k in range(1, 10)] # kmeans cluster
+silhouette_scores = [silhouette_score(customer_data_reduced, model.labels_) for model in kmeans_per_k[1:]]
+
+from sklearn.metrics import silhouette_samples
+from matplotlib.ticker import FixedLocator, FixedFormatter
+
+plt.figure(figsize=(11, 9))
+
+for k in (3, 4, 5, 6):
+    plt.subplot(2, 2, k - 2)
+    
+    y_pred = kmeans_per_k[k - 1].labels_
+    silhouette_coefficients = silhouette_samples(customer_data_reduced, y_pred)
+
+    padding = len(customer_data_reduced) // 30
+    pos = padding
+    ticks = []
+    for i in range(k):
+        coeffs = silhouette_coefficients[y_pred == i]
+        coeffs.sort()
+
+        color = plt.cm.Spectral(i / k)
+        plt.fill_betweenx(np.arange(pos, pos + len(coeffs)), 0, coeffs,
+                          facecolor=color, edgecolor=color, alpha=0.7)
+        ticks.append(pos + len(coeffs) // 2)
+        pos += len(coeffs) + padding
+
+    plt.gca().yaxis.set_major_locator(FixedLocator(ticks))
+    plt.gca().yaxis.set_major_formatter(FixedFormatter(range(k)))
+    if k in (3, 5):
+        plt.ylabel("Cluster")
+    
+    if k in (5, 6):
+        plt.gca().set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
+        plt.xlabel("Silhouette Coefficient")
+    else:
+        plt.tick_params(labelbottom=False)
+    if k in (3, 4):
+        plt.gca().set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
+  
+    plt.axvline(x=silhouette_scores[k], color="red", linestyle="--")
+    plt.title(f"$k={k}$")
+    
+plt.show()
+```
+
+The knife edge plot shows that although k = 3 is the optimum number of clusters by performing randomized search, all the remaining clusters produce similar silhouette scores. Let's take a look at the elbow plot below, with the elbow shown at k = 3. As we can see from the plot, the inertia drops slowly if we increase k above 3.
+
+```{python}
+
+#| echo: true
+
+inertias = [model.inertia_ for model in kmeans_per_k]
+
+plt.xlabel("$k$")
+plt.ylabel("Inertia")
+
+plt.plot(range(1, 10), inertias, "bo-")
+plt.axvline(x=4, color="red", linestyle="--")
+plt.grid()
+plt.show()
+```
+
+Now, let us compare the performance of KMeans cluster with an Agglomerative cluster. The code is shown below.
+
+```{python}
+
+#| echo: true
+
+from sklearn.cluster import AgglomerativeClustering
+
+
+agc = AgglomerativeClustering(n_clusters=3)
+agc.fit(customer_data_reduced)
+
+silhouette_score(customer_data_reduced,agc.labels_)
+```
+
+The Agglomerative cluster does slightly worse than the KMeans cluster. Let us use the KMeans cluster to analyze the results.
+
+## Analyzing Results
+
+Let us plot a bar chart of the 4 clusters as evaluated by KMeans.
+
+```{python}
+
+#| echo: true
+
+y_pred = km.predict(customer_data_reduced) # Cluster predictions
+customer_data['cluster'] = y_pred # Assigning a new cluster column
+
+
+bar_plot = sns.countplot(x=customer_data["cluster"])
+bar_plot.set_title('Cluster distribution')
+plt.show()
+```
+
+The bar plot shows that most of the data is being clustered into 'Cluster 0' and the least amount of data is allocated to 'Cluster 2'. Otherwise, the data seems to be well distributed. Let us also look at a scatterplot to look at the distribution of cluster.
+
+```{python}
+
+#| echo: true
+
+# Cluster customers based on income and expenditure
+
+# Use inverse transform to restore original data
+customer_data['Total_Spending'] = np.exp(customer_data['Total_Spending']) # Inverse of boxcox
+customer_data[to_scale] = std_scaler.inverse_transform(customer_data[to_scale]) # inverse transform to restore initial variables
+scatter = sns.scatterplot(data=customer_data,x=customer_data['Total_Spending'],y=customer_data['Income'],hue=customer_data['cluster'])
+
+scatter.set_title('Customer clusters based on Income and Expenditure')
+plt.legend()
+plt.show()
+
+```
+
+From the scatterplot, we can make the following conclusions:
+
+-   Cluster '0' is on average, comprised of customers with intermediate income and intermediate total expenditure.
+
+-   Cluster '1' is on average, comprised of customers with low income and low total expenditure.
+
+-   Cluster '2' is on average, comprised of customers with high income and high total expenditure.
