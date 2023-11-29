@@ -4504,7 +4504,7 @@ vertical-align: -.125em;
  <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/shrikar1999" rel target><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/shrikar1999/CS5805_Machine_Learning" rel target><i class="bi bi-github" role="img">
 </i> 
  <span class="menu-text"></span></a>
   </li>  
@@ -5285,310 +5285,309 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;Classification of Spotify songs into genres&quot;</span></span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> &quot;Shrikar Banagiri&quot;</span></span>
 <span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> &quot;2023-11-11&quot;</span></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="an">categories:</span><span class="co"> [news, code, analysis]</span></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="an">image:</span><span class="co"> &quot;image.jpg&quot;</span></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span><span class="co"> </span></span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: false</span></span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="co">  freeze: true</span></span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="fu">## **Introduction**</span></span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>This <span class="co">[</span><span class="ot">Spotify song dataset</span><span class="co">](https://www.kaggle.com/datasets/joebeachcapital/30000-spotify-songs/?select=spotify_songs.csv)</span> contains over 30,000 songs from artists of different genres. Each song has specific attributes which help the user discern its genre. These attributes include <span class="in">`danceability`</span>, <span class="in">`energy`</span>, <span class="in">`loudness`</span>, <span class="in">`key`</span>, <span class="in">`mode`</span>, <span class="in">`speechiness`</span>, <span class="in">`acousticness`</span>, <span class="in">`instrumentalness`</span>, <span class="in">`liveness`</span>, <span class="in">`valence`</span>, and <span class="in">`tempo`</span>.</span>
-<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>The problem statement is to classify the songs (based on the above attributes) into six genres: <span class="in">`pop`</span>, <span class="in">`rock`</span>, <span class="in">`latin`</span>, <span class="in">`EDM`</span>, <span class="in">`rap`</span>, and <span class="in">`R&amp;B`</span>.</span>
-<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a><span class="in">```         </span></span>
-<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a><span class="fu">## Importing the dataset</span></span>
-<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>First, we import the libraries required to perform the initial data analysis. The dataset, hosted on <span class="co">[</span><span class="ot">Kaggle</span><span class="co">](https://www.kaggle.com/)</span>, is imported and stored in the variable <span class="in">`spotify_songs`</span>.</span>
-<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true </span></span>
-<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Import the libraries</span></span>
-<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> urllib.request</span>
-<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
-<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> zipfile</span>
-<span id="cb31-40"><a href="#cb31-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-41"><a href="#cb31-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Downloading and opening the dataset</span></span>
-<span id="cb31-42"><a href="#cb31-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-43"><a href="#cb31-43" aria-hidden="true" tabindex="-1"></a>csv_path <span class="op">=</span> Path(<span class="st">&#39;datasets/archive.zip&#39;</span>) <span class="co"># store the dataset in a local folder</span></span>
-<span id="cb31-44"><a href="#cb31-44" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">&#39;https://www.kaggle.com/datasets/joebeachcapital/30000-spotify-songs/download?datasetVersionNumber=2&#39;</span> <span class="co"># url to download the dataset</span></span>
-<span id="cb31-45"><a href="#cb31-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-46"><a href="#cb31-46" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> csv_path.is_file(): <span class="co"># check if the dataset directory exists. </span></span>
-<span id="cb31-47"><a href="#cb31-47" aria-hidden="true" tabindex="-1"></a>  Path(<span class="st">&quot;datasets&quot;</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>,exist_ok<span class="op">=</span><span class="va">True</span>) <span class="co"># Create the directory</span></span>
-<span id="cb31-48"><a href="#cb31-48" aria-hidden="true" tabindex="-1"></a>  urllib.request.urlretrieve(url, csv_path)</span>
-<span id="cb31-49"><a href="#cb31-49" aria-hidden="true" tabindex="-1"></a>  <span class="cf">with</span> zipfile.ZipFile(csv_path) <span class="im">as</span> spotify_file:</span>
-<span id="cb31-50"><a href="#cb31-50" aria-hidden="true" tabindex="-1"></a>    spotify_file.extractall(path<span class="op">=</span><span class="st">&#39;datasets&#39;</span>)</span>
-<span id="cb31-51"><a href="#cb31-51" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb31-52"><a href="#cb31-52" aria-hidden="true" tabindex="-1"></a>spotify_songs <span class="op">=</span> pd.read_csv(Path(<span class="st">&#39;datasets/spotify_songs.csv&#39;</span>)) <span class="co"># Store the dataset in a variable</span></span>
-<span id="cb31-53"><a href="#cb31-53" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-54"><a href="#cb31-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-55"><a href="#cb31-55" aria-hidden="true" tabindex="-1"></a><span class="fu">## Analyzing the Data</span></span>
-<span id="cb31-56"><a href="#cb31-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-57"><a href="#cb31-57" aria-hidden="true" tabindex="-1"></a>Let&#39;s look at the non-null entries in the dataset using the <span class="in">`info()`</span> method below.</span>
-<span id="cb31-58"><a href="#cb31-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-61"><a href="#cb31-61" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-62"><a href="#cb31-62" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb31-63"><a href="#cb31-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-64"><a href="#cb31-64" aria-hidden="true" tabindex="-1"></a>spotify_songs.info()</span>
-<span id="cb31-65"><a href="#cb31-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-66"><a href="#cb31-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-67"><a href="#cb31-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-68"><a href="#cb31-68" aria-hidden="true" tabindex="-1"></a>The output shows that the columns <span class="in">`track_name`</span>, <span class="in">`track_artist`</span>, and <span class="in">`track_album_name`</span> have 5 null elements (i.e., they only have 32828 elements). Let&#39;s look at the genres and their counts in the dataset.</span>
-<span id="cb31-69"><a href="#cb31-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-72"><a href="#cb31-72" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-73"><a href="#cb31-73" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb31-74"><a href="#cb31-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-75"><a href="#cb31-75" aria-hidden="true" tabindex="-1"></a>spotify_songs[<span class="st">&#39;playlist_genre&#39;</span>].value_counts()</span>
-<span id="cb31-76"><a href="#cb31-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-77"><a href="#cb31-77" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-78"><a href="#cb31-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-79"><a href="#cb31-79" aria-hidden="true" tabindex="-1"></a>Let us now look at how different genres compare on the basis of each attribute. But first, we notice that the features have wildly different scales. For example, <span class="in">`loudness`</span> varies from -46.448 to 1.275 whereas tempo ranges from 0 to 1 (see histogram below). Therefore, we must standardize these attributes using the <span class="in">`StandardScaler`</span>. Furthermore, features such as <span class="in">`valence`</span> and <span class="in">`instrumentalness`</span> have very long tails. To convert these attributes to &quot;gaussian&quot; like features, we will use the <span class="in">`boxcox`</span> class from <span class="in">`scipy`</span>.</span>
-<span id="cb31-80"><a href="#cb31-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-83"><a href="#cb31-83" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-84"><a href="#cb31-84" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb31-85"><a href="#cb31-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-86"><a href="#cb31-86" aria-hidden="true" tabindex="-1"></a>spotify_features <span class="op">=</span> spotify_songs.loc[:,[<span class="st">&#39;danceability&#39;</span>,<span class="st">&#39;energy&#39;</span>,<span class="st">&#39;loudness&#39;</span>,<span class="st">&#39;speechiness&#39;</span>,<span class="st">&#39;acousticness&#39;</span>,<span class="st">&#39;instrumentalness&#39;</span>,<span class="st">&#39;liveness&#39;</span>,<span class="st">&#39;valence&#39;</span>,<span class="st">&#39;tempo&#39;</span>]]</span>
-<span id="cb31-87"><a href="#cb31-87" aria-hidden="true" tabindex="-1"></a>spotify_features.hist(bins<span class="op">=</span><span class="dv">50</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">8</span>))</span>
-<span id="cb31-88"><a href="#cb31-88" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb31-89"><a href="#cb31-89" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-90"><a href="#cb31-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-91"><a href="#cb31-91" aria-hidden="true" tabindex="-1"></a>The following violin plot also describes the relationship between some of the attributes and genres. From the first violin plot, it is evident that <span class="in">`rap`</span> music has a higher <span class="in">`danceability`</span> score on average while the most danceable song belongs to the <span class="in">`edm`</span> genre.</span>
-<span id="cb31-92"><a href="#cb31-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-95"><a href="#cb31-95" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-96"><a href="#cb31-96" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb31-97"><a href="#cb31-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-98"><a href="#cb31-98" aria-hidden="true" tabindex="-1"></a>sns.violinplot(x<span class="op">=</span>spotify_songs.playlist_genre,y<span class="op">=</span>spotify_songs.danceability)</span>
-<span id="cb31-99"><a href="#cb31-99" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
-<span id="cb31-100"><a href="#cb31-100" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">&#39;Genre&#39;</span>)</span>
-<span id="cb31-101"><a href="#cb31-101" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">&#39;Danceability score&#39;</span>)</span>
-<span id="cb31-102"><a href="#cb31-102" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb31-103"><a href="#cb31-103" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-104"><a href="#cb31-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-105"><a href="#cb31-105" aria-hidden="true" tabindex="-1"></a>We should also look for any correlations within the features themselves. Ideally, all our features (i.e., attributes) must be independent of each other. However, it may happen that two or more features are highly correlated within themselves. In such a scenario, we will need to drop one of the correlated attributes.</span>
-<span id="cb31-106"><a href="#cb31-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-109"><a href="#cb31-109" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-110"><a href="#cb31-110" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb31-111"><a href="#cb31-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-112"><a href="#cb31-112" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
-<span id="cb31-113"><a href="#cb31-113" aria-hidden="true" tabindex="-1"></a>sns.heatmap(spotify_features.corr(), annot<span class="op">=</span><span class="va">True</span>, cmap<span class="op">=</span><span class="st">&#39;YlGnBu&#39;</span>, vmin<span class="op">=-</span><span class="dv">1</span>, vmax<span class="op">=</span><span class="dv">1</span>, center<span class="op">=</span><span class="dv">0</span>, ax<span class="op">=</span>ax)</span>
-<span id="cb31-114"><a href="#cb31-114" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">&#39;Linear Correlations between attributes&#39;</span>)</span>
-<span id="cb31-115"><a href="#cb31-115" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb31-116"><a href="#cb31-116" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-117"><a href="#cb31-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-118"><a href="#cb31-118" aria-hidden="true" tabindex="-1"></a>From the correlation matrix, we can note that the attributes <span class="in">`energy`</span> and <span class="in">`loudness`</span> are highly correlated. Their correlation coefficient is 0.68. Thus, we will drop the <span class="in">`loudness`</span> attribute.</span>
-<span id="cb31-119"><a href="#cb31-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-120"><a href="#cb31-120" aria-hidden="true" tabindex="-1"></a><span class="fu">## Preprocessing the data</span></span>
-<span id="cb31-121"><a href="#cb31-121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-122"><a href="#cb31-122" aria-hidden="true" tabindex="-1"></a>We will first drop the <span class="in">`loudness`</span> attribute since it is highly correlated with the <span class="in">`energy`</span> attribute.</span>
-<span id="cb31-123"><a href="#cb31-123" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-126"><a href="#cb31-126" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-127"><a href="#cb31-127" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb31-128"><a href="#cb31-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-129"><a href="#cb31-129" aria-hidden="true" tabindex="-1"></a>spotify_songs <span class="op">=</span> spotify_songs.drop(<span class="st">&#39;loudness&#39;</span>,axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb31-130"><a href="#cb31-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-131"><a href="#cb31-131" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-132"><a href="#cb31-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-133"><a href="#cb31-133" aria-hidden="true" tabindex="-1"></a>The column <span class="in">`playlist_subgenre`</span> has attributes such as dance pop and pop edm which are subsets of the parent column <span class="in">`playlist_genre`</span>. Similarly,the <span class="in">`track_id`</span>, <span class="in">`track_name`</span>, <span class="in">`track_artist`</span>, <span class="in">`track_popularity`</span>, <span class="in">`track_album_id`</span>, <span class="in">`track_album_name`</span>, and <span class="in">`track_album_release_date`</span> are not relevant. Thus, we drop all these columns. Furthermore, as we have seen before, there are null values in the <span class="in">`track_name`</span>, <span class="in">`track_artist`</span> , and <span class="in">`track_album_name`</span> columns. Therefore, we need to drop the corresponding rows as well.</span>
-<span id="cb31-134"><a href="#cb31-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-137"><a href="#cb31-137" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-138"><a href="#cb31-138" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb31-139"><a href="#cb31-139" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-140"><a href="#cb31-140" aria-hidden="true" tabindex="-1"></a>spotify_songs.dropna(subset<span class="op">=</span>[<span class="st">&#39;track_name&#39;</span>,<span class="st">&#39;track_artist&#39;</span>,<span class="st">&#39;track_album_name&#39;</span>], inplace<span class="op">=</span><span class="va">True</span>) <span class="co"># Drop null values from the data</span></span>
-<span id="cb31-141"><a href="#cb31-141" aria-hidden="true" tabindex="-1"></a>spotify_songs <span class="op">=</span> spotify_songs.loc[:,<span class="st">&#39;playlist_genre&#39;</span>:<span class="st">&#39;tempo&#39;</span>] <span class="co"># drop unnecessary columns</span></span>
-<span id="cb31-142"><a href="#cb31-142" aria-hidden="true" tabindex="-1"></a>spotify_songs <span class="op">=</span> spotify_songs.drop(<span class="st">&#39;playlist_subgenre&#39;</span>,axis<span class="op">=</span><span class="dv">1</span>) <span class="co"># drop unnecessary columns</span></span>
-<span id="cb31-143"><a href="#cb31-143" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-144"><a href="#cb31-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-145"><a href="#cb31-145" aria-hidden="true" tabindex="-1"></a>We can verify that the null values have been dropped by calling the <span class="in">`.info()`</span> method again.</span>
-<span id="cb31-146"><a href="#cb31-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-149"><a href="#cb31-149" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-150"><a href="#cb31-150" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb31-151"><a href="#cb31-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-152"><a href="#cb31-152" aria-hidden="true" tabindex="-1"></a>spotify_songs.info()</span>
-<span id="cb31-153"><a href="#cb31-153" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-154"><a href="#cb31-154" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-155"><a href="#cb31-155" aria-hidden="true" tabindex="-1"></a>Next, we will use <span class="in">`StandardScaler`</span> transformer to standardize our attributes. Notice that the <span class="in">`spotify_features`</span> dataframe in the following code does not include the <span class="in">`loudness`</span> attribute.</span>
-<span id="cb31-156"><a href="#cb31-156" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-159"><a href="#cb31-159" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-160"><a href="#cb31-160" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb31-161"><a href="#cb31-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-162"><a href="#cb31-162" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
-<span id="cb31-163"><a href="#cb31-163" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> MinMaxScaler</span>
-<span id="cb31-164"><a href="#cb31-164" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> boxcox</span>
-<span id="cb31-165"><a href="#cb31-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-166"><a href="#cb31-166" aria-hidden="true" tabindex="-1"></a>std_scaler <span class="op">=</span> StandardScaler()</span>
-<span id="cb31-167"><a href="#cb31-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-168"><a href="#cb31-168" aria-hidden="true" tabindex="-1"></a>spotify_features <span class="op">=</span> spotify_songs.loc[:,[<span class="st">&#39;danceability&#39;</span>,<span class="st">&#39;energy&#39;</span>,<span class="st">&#39;speechiness&#39;</span>,<span class="st">&#39;acousticness&#39;</span>,<span class="st">&#39;instrumentalness&#39;</span>,<span class="st">&#39;liveness&#39;</span>,<span class="st">&#39;valence&#39;</span>,<span class="st">&#39;tempo&#39;</span>]] <span class="co"># collecting all the important features in a dataframe</span></span>
-<span id="cb31-169"><a href="#cb31-169" aria-hidden="true" tabindex="-1"></a>spotify_songs.loc[:,[<span class="st">&#39;danceability&#39;</span>,<span class="st">&#39;energy&#39;</span>,<span class="st">&#39;speechiness&#39;</span>,<span class="st">&#39;acousticness&#39;</span>,<span class="st">&#39;instrumentalness&#39;</span>,<span class="st">&#39;liveness&#39;</span>,<span class="st">&#39;valence&#39;</span>,<span class="st">&#39;tempo&#39;</span>]] <span class="op">=</span> std_scaler.fit_transform(spotify_features)</span>
-<span id="cb31-170"><a href="#cb31-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-171"><a href="#cb31-171" aria-hidden="true" tabindex="-1"></a><span class="co"># Using boxcox to scale heavy-tailed features</span></span>
-<span id="cb31-172"><a href="#cb31-172" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-173"><a href="#cb31-173" aria-hidden="true" tabindex="-1"></a>min_max_scaler <span class="op">=</span> MinMaxScaler()</span>
-<span id="cb31-174"><a href="#cb31-174" aria-hidden="true" tabindex="-1"></a>spotify_new_features <span class="op">=</span> spotify_songs.loc[:,<span class="st">&#39;speechiness&#39;</span>:<span class="st">&#39;liveness&#39;</span>]</span>
-<span id="cb31-175"><a href="#cb31-175" aria-hidden="true" tabindex="-1"></a>spotify_tail_features <span class="op">=</span> min_max_scaler.fit_transform(spotify_new_features)</span>
-<span id="cb31-176"><a href="#cb31-176" aria-hidden="true" tabindex="-1"></a>spotify_tail_features <span class="op">=</span> pd.DataFrame(spotify_tail_features,columns<span class="op">=</span>spotify_new_features.columns)</span>
-<span id="cb31-177"><a href="#cb31-177" aria-hidden="true" tabindex="-1"></a>transformed_acousticness <span class="op">=</span> boxcox(spotify_tail_features.acousticness,<span class="fl">0.25</span>) </span>
-<span id="cb31-178"><a href="#cb31-178" aria-hidden="true" tabindex="-1"></a>spotify_songs.acousticness <span class="op">=</span> transformed_acousticness</span>
-<span id="cb31-179"><a href="#cb31-179" aria-hidden="true" tabindex="-1"></a>transformed_liveness <span class="op">=</span> boxcox(spotify_tail_features.acousticness,<span class="fl">0.25</span>)</span>
-<span id="cb31-180"><a href="#cb31-180" aria-hidden="true" tabindex="-1"></a>spotify_songs.liveness <span class="op">=</span> transformed_liveness</span>
-<span id="cb31-181"><a href="#cb31-181" aria-hidden="true" tabindex="-1"></a>transformed_instrumentalness <span class="op">=</span> boxcox(spotify_tail_features.instrumentalness,<span class="fl">0.2</span>) </span>
-<span id="cb31-182"><a href="#cb31-182" aria-hidden="true" tabindex="-1"></a>spotify_songs.instrumentalness <span class="op">=</span> transformed_instrumentalness</span>
-<span id="cb31-183"><a href="#cb31-183" aria-hidden="true" tabindex="-1"></a>transformed_speechiness <span class="op">=</span> boxcox(spotify_tail_features.speechiness,<span class="fl">0.2</span>)</span>
-<span id="cb31-184"><a href="#cb31-184" aria-hidden="true" tabindex="-1"></a>spotify_songs.speechiness <span class="op">=</span> transformed_speechiness</span>
-<span id="cb31-185"><a href="#cb31-185" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-186"><a href="#cb31-186" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-187"><a href="#cb31-187" aria-hidden="true" tabindex="-1"></a>Now, we can take a look at the feature distributions. As we can see, the attributes are on the same scale and many of them are centered around zero. Most of these distributions are Gaussian.</span>
-<span id="cb31-188"><a href="#cb31-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-191"><a href="#cb31-191" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-192"><a href="#cb31-192" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb31-193"><a href="#cb31-193" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-194"><a href="#cb31-194" aria-hidden="true" tabindex="-1"></a>spotify_features <span class="op">=</span> spotify_songs.loc[:,[<span class="st">&#39;danceability&#39;</span>,<span class="st">&#39;energy&#39;</span>,<span class="st">&#39;speechiness&#39;</span>,<span class="st">&#39;acousticness&#39;</span>,<span class="st">&#39;instrumentalness&#39;</span>,<span class="st">&#39;liveness&#39;</span>,<span class="st">&#39;valence&#39;</span>,<span class="st">&#39;tempo&#39;</span>]]</span>
-<span id="cb31-195"><a href="#cb31-195" aria-hidden="true" tabindex="-1"></a>spotify_features.hist(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">8</span>))</span>
-<span id="cb31-196"><a href="#cb31-196" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb31-197"><a href="#cb31-197" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-198"><a href="#cb31-198" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-199"><a href="#cb31-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-200"><a href="#cb31-200" aria-hidden="true" tabindex="-1"></a><span class="fu">## Creating Training and Test Sets</span></span>
-<span id="cb31-201"><a href="#cb31-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-202"><a href="#cb31-202" aria-hidden="true" tabindex="-1"></a>Now, we will create training and test sets. We will do this by limiting the test set size to 20 % of the total data set. Since we need an equal distribution of our target labels (i.e., the playlist genres), we will need to stratify the data with respect to the playlist genres.</span>
-<span id="cb31-203"><a href="#cb31-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-206"><a href="#cb31-206" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-207"><a href="#cb31-207" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb31-208"><a href="#cb31-208" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-209"><a href="#cb31-209" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
-<span id="cb31-210"><a href="#cb31-210" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-211"><a href="#cb31-211" aria-hidden="true" tabindex="-1"></a>train_set, test_set <span class="op">=</span> train_test_split(spotify_songs, test_size<span class="op">=</span><span class="fl">0.2</span>, stratify <span class="op">=</span> spotify_songs.playlist_genre,random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb31-212"><a href="#cb31-212" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-213"><a href="#cb31-213" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> train_set.drop(<span class="st">&#39;playlist_genre&#39;</span>,axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb31-214"><a href="#cb31-214" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> train_set[<span class="st">&#39;playlist_genre&#39;</span>]</span>
-<span id="cb31-215"><a href="#cb31-215" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> test_set.drop(<span class="st">&#39;playlist_genre&#39;</span>,axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb31-216"><a href="#cb31-216" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> test_set[<span class="st">&#39;playlist_genre&#39;</span>]</span>
-<span id="cb31-217"><a href="#cb31-217" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-218"><a href="#cb31-218" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-219"><a href="#cb31-219" aria-hidden="true" tabindex="-1"></a><span class="fu">## Train the models</span></span>
-<span id="cb31-220"><a href="#cb31-220" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-221"><a href="#cb31-221" aria-hidden="true" tabindex="-1"></a>Since this is a <span class="co">[</span><span class="ot">multiclass classification problem</span><span class="co">](https://scikit-learn.org/stable/modules/multiclass.html#:~:text=Multiclass%20classification%20is%20a%20classification,an%20apple%2C%20or%20a%20pear.)</span>, support vector classifiers do not scale very well. Therefore, we will look for other classifiers. First, we&#39;ll try logistic regression.</span>
-<span id="cb31-222"><a href="#cb31-222" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-225"><a href="#cb31-225" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-226"><a href="#cb31-226" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb31-227"><a href="#cb31-227" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-228"><a href="#cb31-228" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
-<span id="cb31-229"><a href="#cb31-229" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-230"><a href="#cb31-230" aria-hidden="true" tabindex="-1"></a>log_clf <span class="op">=</span> LogisticRegression(max_iter<span class="op">=</span><span class="dv">1000</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb31-231"><a href="#cb31-231" aria-hidden="true" tabindex="-1"></a>log_clf.fit(X_train, y_train)<span class="op">;</span> <span class="co"># Train the model</span></span>
-<span id="cb31-232"><a href="#cb31-232" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-233"><a href="#cb31-233" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-234"><a href="#cb31-234" aria-hidden="true" tabindex="-1"></a>To measure the performance of the classifier, we will first import the <span class="in">`cross_val_score`</span> function from scikit learn.</span>
-<span id="cb31-235"><a href="#cb31-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-238"><a href="#cb31-238" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-239"><a href="#cb31-239" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="an">image:</span><span class="co"> &quot;image.jpg&quot;</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span><span class="co"> </span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: false</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co">  freeze: true</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## **Introduction**</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>This <span class="co">[</span><span class="ot">Spotify song dataset</span><span class="co">](https://www.kaggle.com/datasets/joebeachcapital/30000-spotify-songs/?select=spotify_songs.csv)</span> contains over 30,000 songs from artists of different genres. Each song has specific attributes which help the user discern its genre. These attributes include <span class="in">`danceability`</span>, <span class="in">`energy`</span>, <span class="in">`loudness`</span>, <span class="in">`key`</span>, <span class="in">`mode`</span>, <span class="in">`speechiness`</span>, <span class="in">`acousticness`</span>, <span class="in">`instrumentalness`</span>, <span class="in">`liveness`</span>, <span class="in">`valence`</span>, and <span class="in">`tempo`</span>.</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>The problem statement is to classify the songs (based on the above attributes) into six genres: <span class="in">`pop`</span>, <span class="in">`rock`</span>, <span class="in">`latin`</span>, <span class="in">`EDM`</span>, <span class="in">`rap`</span>, and <span class="in">`R&amp;B`</span>.</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a><span class="in">```         </span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a><span class="fu">## Importing the dataset</span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>First, we import the libraries required to perform the initial data analysis. The dataset, hosted on <span class="co">[</span><span class="ot">Kaggle</span><span class="co">](https://www.kaggle.com/)</span>, is imported and stored in the variable <span class="in">`spotify_songs`</span>.</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true </span></span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Import the libraries</span></span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> urllib.request</span>
+<span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> zipfile</span>
+<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-40"><a href="#cb31-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Downloading and opening the dataset</span></span>
+<span id="cb31-41"><a href="#cb31-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-42"><a href="#cb31-42" aria-hidden="true" tabindex="-1"></a>csv_path <span class="op">=</span> Path(<span class="st">&#39;datasets/archive.zip&#39;</span>) <span class="co"># store the dataset in a local folder</span></span>
+<span id="cb31-43"><a href="#cb31-43" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">&#39;https://www.kaggle.com/datasets/joebeachcapital/30000-spotify-songs/download?datasetVersionNumber=2&#39;</span> <span class="co"># url to download the dataset</span></span>
+<span id="cb31-44"><a href="#cb31-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-45"><a href="#cb31-45" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> csv_path.is_file(): <span class="co"># check if the dataset directory exists. </span></span>
+<span id="cb31-46"><a href="#cb31-46" aria-hidden="true" tabindex="-1"></a>  Path(<span class="st">&quot;datasets&quot;</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>,exist_ok<span class="op">=</span><span class="va">True</span>) <span class="co"># Create the directory</span></span>
+<span id="cb31-47"><a href="#cb31-47" aria-hidden="true" tabindex="-1"></a>  urllib.request.urlretrieve(url, csv_path)</span>
+<span id="cb31-48"><a href="#cb31-48" aria-hidden="true" tabindex="-1"></a>  <span class="cf">with</span> zipfile.ZipFile(csv_path) <span class="im">as</span> spotify_file:</span>
+<span id="cb31-49"><a href="#cb31-49" aria-hidden="true" tabindex="-1"></a>    spotify_file.extractall(path<span class="op">=</span><span class="st">&#39;datasets&#39;</span>)</span>
+<span id="cb31-50"><a href="#cb31-50" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb31-51"><a href="#cb31-51" aria-hidden="true" tabindex="-1"></a>spotify_songs <span class="op">=</span> pd.read_csv(Path(<span class="st">&#39;datasets/spotify_songs.csv&#39;</span>)) <span class="co"># Store the dataset in a variable</span></span>
+<span id="cb31-52"><a href="#cb31-52" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-53"><a href="#cb31-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-54"><a href="#cb31-54" aria-hidden="true" tabindex="-1"></a><span class="fu">## Analyzing the Data</span></span>
+<span id="cb31-55"><a href="#cb31-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-56"><a href="#cb31-56" aria-hidden="true" tabindex="-1"></a>Let&#39;s look at the non-null entries in the dataset using the <span class="in">`info()`</span> method below.</span>
+<span id="cb31-57"><a href="#cb31-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-60"><a href="#cb31-60" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-61"><a href="#cb31-61" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-62"><a href="#cb31-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-63"><a href="#cb31-63" aria-hidden="true" tabindex="-1"></a>spotify_songs.info()</span>
+<span id="cb31-64"><a href="#cb31-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-65"><a href="#cb31-65" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-66"><a href="#cb31-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-67"><a href="#cb31-67" aria-hidden="true" tabindex="-1"></a>The output shows that the columns <span class="in">`track_name`</span>, <span class="in">`track_artist`</span>, and <span class="in">`track_album_name`</span> have 5 null elements (i.e., they only have 32828 elements). Let&#39;s look at the genres and their counts in the dataset.</span>
+<span id="cb31-68"><a href="#cb31-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-71"><a href="#cb31-71" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-72"><a href="#cb31-72" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-73"><a href="#cb31-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-74"><a href="#cb31-74" aria-hidden="true" tabindex="-1"></a>spotify_songs[<span class="st">&#39;playlist_genre&#39;</span>].value_counts()</span>
+<span id="cb31-75"><a href="#cb31-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-76"><a href="#cb31-76" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-77"><a href="#cb31-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-78"><a href="#cb31-78" aria-hidden="true" tabindex="-1"></a>Let us now look at how different genres compare on the basis of each attribute. But first, we notice that the features have wildly different scales. For example, <span class="in">`loudness`</span> varies from -46.448 to 1.275 whereas tempo ranges from 0 to 1 (see histogram below). Therefore, we must standardize these attributes using the <span class="in">`StandardScaler`</span>. Furthermore, features such as <span class="in">`valence`</span> and <span class="in">`instrumentalness`</span> have very long tails. To convert these attributes to &quot;gaussian&quot; like features, we will use the <span class="in">`boxcox`</span> class from <span class="in">`scipy`</span>.</span>
+<span id="cb31-79"><a href="#cb31-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-82"><a href="#cb31-82" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-83"><a href="#cb31-83" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-84"><a href="#cb31-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-85"><a href="#cb31-85" aria-hidden="true" tabindex="-1"></a>spotify_features <span class="op">=</span> spotify_songs.loc[:,[<span class="st">&#39;danceability&#39;</span>,<span class="st">&#39;energy&#39;</span>,<span class="st">&#39;loudness&#39;</span>,<span class="st">&#39;speechiness&#39;</span>,<span class="st">&#39;acousticness&#39;</span>,<span class="st">&#39;instrumentalness&#39;</span>,<span class="st">&#39;liveness&#39;</span>,<span class="st">&#39;valence&#39;</span>,<span class="st">&#39;tempo&#39;</span>]]</span>
+<span id="cb31-86"><a href="#cb31-86" aria-hidden="true" tabindex="-1"></a>spotify_features.hist(bins<span class="op">=</span><span class="dv">50</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">8</span>))</span>
+<span id="cb31-87"><a href="#cb31-87" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb31-88"><a href="#cb31-88" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-89"><a href="#cb31-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-90"><a href="#cb31-90" aria-hidden="true" tabindex="-1"></a>The following violin plot also describes the relationship between some of the attributes and genres. From the first violin plot, it is evident that <span class="in">`rap`</span> music has a higher <span class="in">`danceability`</span> score on average while the most danceable song belongs to the <span class="in">`edm`</span> genre.</span>
+<span id="cb31-91"><a href="#cb31-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-94"><a href="#cb31-94" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-95"><a href="#cb31-95" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-96"><a href="#cb31-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-97"><a href="#cb31-97" aria-hidden="true" tabindex="-1"></a>sns.violinplot(x<span class="op">=</span>spotify_songs.playlist_genre,y<span class="op">=</span>spotify_songs.danceability)</span>
+<span id="cb31-98"><a href="#cb31-98" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb31-99"><a href="#cb31-99" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">&#39;Genre&#39;</span>)</span>
+<span id="cb31-100"><a href="#cb31-100" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">&#39;Danceability score&#39;</span>)</span>
+<span id="cb31-101"><a href="#cb31-101" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb31-102"><a href="#cb31-102" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-103"><a href="#cb31-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-104"><a href="#cb31-104" aria-hidden="true" tabindex="-1"></a>We should also look for any correlations within the features themselves. Ideally, all our features (i.e., attributes) must be independent of each other. However, it may happen that two or more features are highly correlated within themselves. In such a scenario, we will need to drop one of the correlated attributes.</span>
+<span id="cb31-105"><a href="#cb31-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-108"><a href="#cb31-108" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-109"><a href="#cb31-109" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-110"><a href="#cb31-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-111"><a href="#cb31-111" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
+<span id="cb31-112"><a href="#cb31-112" aria-hidden="true" tabindex="-1"></a>sns.heatmap(spotify_features.corr(), annot<span class="op">=</span><span class="va">True</span>, cmap<span class="op">=</span><span class="st">&#39;YlGnBu&#39;</span>, vmin<span class="op">=-</span><span class="dv">1</span>, vmax<span class="op">=</span><span class="dv">1</span>, center<span class="op">=</span><span class="dv">0</span>, ax<span class="op">=</span>ax)</span>
+<span id="cb31-113"><a href="#cb31-113" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">&#39;Linear Correlations between attributes&#39;</span>)</span>
+<span id="cb31-114"><a href="#cb31-114" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb31-115"><a href="#cb31-115" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-116"><a href="#cb31-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-117"><a href="#cb31-117" aria-hidden="true" tabindex="-1"></a>From the correlation matrix, we can note that the attributes <span class="in">`energy`</span> and <span class="in">`loudness`</span> are highly correlated. Their correlation coefficient is 0.68. Thus, we will drop the <span class="in">`loudness`</span> attribute.</span>
+<span id="cb31-118"><a href="#cb31-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-119"><a href="#cb31-119" aria-hidden="true" tabindex="-1"></a><span class="fu">## Preprocessing the data</span></span>
+<span id="cb31-120"><a href="#cb31-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-121"><a href="#cb31-121" aria-hidden="true" tabindex="-1"></a>We will first drop the <span class="in">`loudness`</span> attribute since it is highly correlated with the <span class="in">`energy`</span> attribute.</span>
+<span id="cb31-122"><a href="#cb31-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-125"><a href="#cb31-125" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-126"><a href="#cb31-126" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-127"><a href="#cb31-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-128"><a href="#cb31-128" aria-hidden="true" tabindex="-1"></a>spotify_songs <span class="op">=</span> spotify_songs.drop(<span class="st">&#39;loudness&#39;</span>,axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb31-129"><a href="#cb31-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-130"><a href="#cb31-130" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-131"><a href="#cb31-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-132"><a href="#cb31-132" aria-hidden="true" tabindex="-1"></a>The column <span class="in">`playlist_subgenre`</span> has attributes such as dance pop and pop edm which are subsets of the parent column <span class="in">`playlist_genre`</span>. Similarly,the <span class="in">`track_id`</span>, <span class="in">`track_name`</span>, <span class="in">`track_artist`</span>, <span class="in">`track_popularity`</span>, <span class="in">`track_album_id`</span>, <span class="in">`track_album_name`</span>, and <span class="in">`track_album_release_date`</span> are not relevant. Thus, we drop all these columns. Furthermore, as we have seen before, there are null values in the <span class="in">`track_name`</span>, <span class="in">`track_artist`</span> , and <span class="in">`track_album_name`</span> columns. Therefore, we need to drop the corresponding rows as well.</span>
+<span id="cb31-133"><a href="#cb31-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-136"><a href="#cb31-136" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-137"><a href="#cb31-137" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-138"><a href="#cb31-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-139"><a href="#cb31-139" aria-hidden="true" tabindex="-1"></a>spotify_songs.dropna(subset<span class="op">=</span>[<span class="st">&#39;track_name&#39;</span>,<span class="st">&#39;track_artist&#39;</span>,<span class="st">&#39;track_album_name&#39;</span>], inplace<span class="op">=</span><span class="va">True</span>) <span class="co"># Drop null values from the data</span></span>
+<span id="cb31-140"><a href="#cb31-140" aria-hidden="true" tabindex="-1"></a>spotify_songs <span class="op">=</span> spotify_songs.loc[:,<span class="st">&#39;playlist_genre&#39;</span>:<span class="st">&#39;tempo&#39;</span>] <span class="co"># drop unnecessary columns</span></span>
+<span id="cb31-141"><a href="#cb31-141" aria-hidden="true" tabindex="-1"></a>spotify_songs <span class="op">=</span> spotify_songs.drop(<span class="st">&#39;playlist_subgenre&#39;</span>,axis<span class="op">=</span><span class="dv">1</span>) <span class="co"># drop unnecessary columns</span></span>
+<span id="cb31-142"><a href="#cb31-142" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-143"><a href="#cb31-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-144"><a href="#cb31-144" aria-hidden="true" tabindex="-1"></a>We can verify that the null values have been dropped by calling the <span class="in">`.info()`</span> method again.</span>
+<span id="cb31-145"><a href="#cb31-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-148"><a href="#cb31-148" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-149"><a href="#cb31-149" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-150"><a href="#cb31-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-151"><a href="#cb31-151" aria-hidden="true" tabindex="-1"></a>spotify_songs.info()</span>
+<span id="cb31-152"><a href="#cb31-152" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-153"><a href="#cb31-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-154"><a href="#cb31-154" aria-hidden="true" tabindex="-1"></a>Next, we will use <span class="in">`StandardScaler`</span> transformer to standardize our attributes. Notice that the <span class="in">`spotify_features`</span> dataframe in the following code does not include the <span class="in">`loudness`</span> attribute.</span>
+<span id="cb31-155"><a href="#cb31-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-158"><a href="#cb31-158" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-159"><a href="#cb31-159" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-160"><a href="#cb31-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-161"><a href="#cb31-161" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb31-162"><a href="#cb31-162" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> MinMaxScaler</span>
+<span id="cb31-163"><a href="#cb31-163" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> boxcox</span>
+<span id="cb31-164"><a href="#cb31-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-165"><a href="#cb31-165" aria-hidden="true" tabindex="-1"></a>std_scaler <span class="op">=</span> StandardScaler()</span>
+<span id="cb31-166"><a href="#cb31-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-167"><a href="#cb31-167" aria-hidden="true" tabindex="-1"></a>spotify_features <span class="op">=</span> spotify_songs.loc[:,[<span class="st">&#39;danceability&#39;</span>,<span class="st">&#39;energy&#39;</span>,<span class="st">&#39;speechiness&#39;</span>,<span class="st">&#39;acousticness&#39;</span>,<span class="st">&#39;instrumentalness&#39;</span>,<span class="st">&#39;liveness&#39;</span>,<span class="st">&#39;valence&#39;</span>,<span class="st">&#39;tempo&#39;</span>]] <span class="co"># collecting all the important features in a dataframe</span></span>
+<span id="cb31-168"><a href="#cb31-168" aria-hidden="true" tabindex="-1"></a>spotify_songs.loc[:,[<span class="st">&#39;danceability&#39;</span>,<span class="st">&#39;energy&#39;</span>,<span class="st">&#39;speechiness&#39;</span>,<span class="st">&#39;acousticness&#39;</span>,<span class="st">&#39;instrumentalness&#39;</span>,<span class="st">&#39;liveness&#39;</span>,<span class="st">&#39;valence&#39;</span>,<span class="st">&#39;tempo&#39;</span>]] <span class="op">=</span> std_scaler.fit_transform(spotify_features)</span>
+<span id="cb31-169"><a href="#cb31-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-170"><a href="#cb31-170" aria-hidden="true" tabindex="-1"></a><span class="co"># Using boxcox to scale heavy-tailed features</span></span>
+<span id="cb31-171"><a href="#cb31-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-172"><a href="#cb31-172" aria-hidden="true" tabindex="-1"></a>min_max_scaler <span class="op">=</span> MinMaxScaler()</span>
+<span id="cb31-173"><a href="#cb31-173" aria-hidden="true" tabindex="-1"></a>spotify_new_features <span class="op">=</span> spotify_songs.loc[:,<span class="st">&#39;speechiness&#39;</span>:<span class="st">&#39;liveness&#39;</span>]</span>
+<span id="cb31-174"><a href="#cb31-174" aria-hidden="true" tabindex="-1"></a>spotify_tail_features <span class="op">=</span> min_max_scaler.fit_transform(spotify_new_features)</span>
+<span id="cb31-175"><a href="#cb31-175" aria-hidden="true" tabindex="-1"></a>spotify_tail_features <span class="op">=</span> pd.DataFrame(spotify_tail_features,columns<span class="op">=</span>spotify_new_features.columns)</span>
+<span id="cb31-176"><a href="#cb31-176" aria-hidden="true" tabindex="-1"></a>transformed_acousticness <span class="op">=</span> boxcox(spotify_tail_features.acousticness,<span class="fl">0.25</span>) </span>
+<span id="cb31-177"><a href="#cb31-177" aria-hidden="true" tabindex="-1"></a>spotify_songs.acousticness <span class="op">=</span> transformed_acousticness</span>
+<span id="cb31-178"><a href="#cb31-178" aria-hidden="true" tabindex="-1"></a>transformed_liveness <span class="op">=</span> boxcox(spotify_tail_features.acousticness,<span class="fl">0.25</span>)</span>
+<span id="cb31-179"><a href="#cb31-179" aria-hidden="true" tabindex="-1"></a>spotify_songs.liveness <span class="op">=</span> transformed_liveness</span>
+<span id="cb31-180"><a href="#cb31-180" aria-hidden="true" tabindex="-1"></a>transformed_instrumentalness <span class="op">=</span> boxcox(spotify_tail_features.instrumentalness,<span class="fl">0.2</span>) </span>
+<span id="cb31-181"><a href="#cb31-181" aria-hidden="true" tabindex="-1"></a>spotify_songs.instrumentalness <span class="op">=</span> transformed_instrumentalness</span>
+<span id="cb31-182"><a href="#cb31-182" aria-hidden="true" tabindex="-1"></a>transformed_speechiness <span class="op">=</span> boxcox(spotify_tail_features.speechiness,<span class="fl">0.2</span>)</span>
+<span id="cb31-183"><a href="#cb31-183" aria-hidden="true" tabindex="-1"></a>spotify_songs.speechiness <span class="op">=</span> transformed_speechiness</span>
+<span id="cb31-184"><a href="#cb31-184" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-185"><a href="#cb31-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-186"><a href="#cb31-186" aria-hidden="true" tabindex="-1"></a>Now, we can take a look at the feature distributions. As we can see, the attributes are on the same scale and many of them are centered around zero. Most of these distributions are Gaussian.</span>
+<span id="cb31-187"><a href="#cb31-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-190"><a href="#cb31-190" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-191"><a href="#cb31-191" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-192"><a href="#cb31-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-193"><a href="#cb31-193" aria-hidden="true" tabindex="-1"></a>spotify_features <span class="op">=</span> spotify_songs.loc[:,[<span class="st">&#39;danceability&#39;</span>,<span class="st">&#39;energy&#39;</span>,<span class="st">&#39;speechiness&#39;</span>,<span class="st">&#39;acousticness&#39;</span>,<span class="st">&#39;instrumentalness&#39;</span>,<span class="st">&#39;liveness&#39;</span>,<span class="st">&#39;valence&#39;</span>,<span class="st">&#39;tempo&#39;</span>]]</span>
+<span id="cb31-194"><a href="#cb31-194" aria-hidden="true" tabindex="-1"></a>spotify_features.hist(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">8</span>))</span>
+<span id="cb31-195"><a href="#cb31-195" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb31-196"><a href="#cb31-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-197"><a href="#cb31-197" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-198"><a href="#cb31-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-199"><a href="#cb31-199" aria-hidden="true" tabindex="-1"></a><span class="fu">## Creating Training and Test Sets</span></span>
+<span id="cb31-200"><a href="#cb31-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-201"><a href="#cb31-201" aria-hidden="true" tabindex="-1"></a>Now, we will create training and test sets. We will do this by limiting the test set size to 20 % of the total data set. Since we need an equal distribution of our target labels (i.e., the playlist genres), we will need to stratify the data with respect to the playlist genres.</span>
+<span id="cb31-202"><a href="#cb31-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-205"><a href="#cb31-205" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-206"><a href="#cb31-206" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-207"><a href="#cb31-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-208"><a href="#cb31-208" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb31-209"><a href="#cb31-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-210"><a href="#cb31-210" aria-hidden="true" tabindex="-1"></a>train_set, test_set <span class="op">=</span> train_test_split(spotify_songs, test_size<span class="op">=</span><span class="fl">0.2</span>, stratify <span class="op">=</span> spotify_songs.playlist_genre,random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb31-211"><a href="#cb31-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-212"><a href="#cb31-212" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> train_set.drop(<span class="st">&#39;playlist_genre&#39;</span>,axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb31-213"><a href="#cb31-213" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> train_set[<span class="st">&#39;playlist_genre&#39;</span>]</span>
+<span id="cb31-214"><a href="#cb31-214" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> test_set.drop(<span class="st">&#39;playlist_genre&#39;</span>,axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb31-215"><a href="#cb31-215" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> test_set[<span class="st">&#39;playlist_genre&#39;</span>]</span>
+<span id="cb31-216"><a href="#cb31-216" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-217"><a href="#cb31-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-218"><a href="#cb31-218" aria-hidden="true" tabindex="-1"></a><span class="fu">## Train the models</span></span>
+<span id="cb31-219"><a href="#cb31-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-220"><a href="#cb31-220" aria-hidden="true" tabindex="-1"></a>Since this is a <span class="co">[</span><span class="ot">multiclass classification problem</span><span class="co">](https://scikit-learn.org/stable/modules/multiclass.html#:~:text=Multiclass%20classification%20is%20a%20classification,an%20apple%2C%20or%20a%20pear.)</span>, support vector classifiers do not scale very well. Therefore, we will look for other classifiers. First, we&#39;ll try logistic regression.</span>
+<span id="cb31-221"><a href="#cb31-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-224"><a href="#cb31-224" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-225"><a href="#cb31-225" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-226"><a href="#cb31-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-227"><a href="#cb31-227" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb31-228"><a href="#cb31-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-229"><a href="#cb31-229" aria-hidden="true" tabindex="-1"></a>log_clf <span class="op">=</span> LogisticRegression(max_iter<span class="op">=</span><span class="dv">1000</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb31-230"><a href="#cb31-230" aria-hidden="true" tabindex="-1"></a>log_clf.fit(X_train, y_train)<span class="op">;</span> <span class="co"># Train the model</span></span>
+<span id="cb31-231"><a href="#cb31-231" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-232"><a href="#cb31-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-233"><a href="#cb31-233" aria-hidden="true" tabindex="-1"></a>To measure the performance of the classifier, we will first import the <span class="in">`cross_val_score`</span> function from scikit learn.</span>
+<span id="cb31-234"><a href="#cb31-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-237"><a href="#cb31-237" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-238"><a href="#cb31-238" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-239"><a href="#cb31-239" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-240"><a href="#cb31-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-241"><a href="#cb31-241" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-242"><a href="#cb31-242" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score</span>
-<span id="cb31-243"><a href="#cb31-243" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-244"><a href="#cb31-244" aria-hidden="true" tabindex="-1"></a>cross_val_score(log_clf,X_train,y_train,cv<span class="op">=</span><span class="dv">3</span>,scoring<span class="op">=</span><span class="st">&#39;accuracy&#39;</span>)</span>
-<span id="cb31-245"><a href="#cb31-245" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-246"><a href="#cb31-246" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-247"><a href="#cb31-247" aria-hidden="true" tabindex="-1"></a>For the 3 validation folds, Logistic Regression predicts the correct genres with 45 % accuracy on average. Let us compare this performance with a dummy classifier.</span>
-<span id="cb31-248"><a href="#cb31-248" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-251"><a href="#cb31-251" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-252"><a href="#cb31-252" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-241"><a href="#cb31-241" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score</span>
+<span id="cb31-242"><a href="#cb31-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-243"><a href="#cb31-243" aria-hidden="true" tabindex="-1"></a>cross_val_score(log_clf,X_train,y_train,cv<span class="op">=</span><span class="dv">3</span>,scoring<span class="op">=</span><span class="st">&#39;accuracy&#39;</span>)</span>
+<span id="cb31-244"><a href="#cb31-244" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-245"><a href="#cb31-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-246"><a href="#cb31-246" aria-hidden="true" tabindex="-1"></a>For the 3 validation folds, Logistic Regression predicts the correct genres with 45 % accuracy on average. Let us compare this performance with a dummy classifier.</span>
+<span id="cb31-247"><a href="#cb31-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-250"><a href="#cb31-250" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-251"><a href="#cb31-251" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-252"><a href="#cb31-252" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-253"><a href="#cb31-253" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-254"><a href="#cb31-254" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-255"><a href="#cb31-255" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-256"><a href="#cb31-256" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyClassifier</span>
-<span id="cb31-257"><a href="#cb31-257" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-258"><a href="#cb31-258" aria-hidden="true" tabindex="-1"></a>dummy_clf <span class="op">=</span> DummyClassifier()</span>
-<span id="cb31-259"><a href="#cb31-259" aria-hidden="true" tabindex="-1"></a>dummy_clf.fit(X_train, y_train)</span>
-<span id="cb31-260"><a href="#cb31-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-261"><a href="#cb31-261" aria-hidden="true" tabindex="-1"></a>cross_val_score(dummy_clf, X_train, y_train, cv<span class="op">=</span><span class="dv">3</span>,scoring<span class="op">=</span><span class="st">&#39;accuracy&#39;</span>)</span>
-<span id="cb31-262"><a href="#cb31-262" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-263"><a href="#cb31-263" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-264"><a href="#cb31-264" aria-hidden="true" tabindex="-1"></a>The dummy classifier predicts the correct genre with 18 % accuracy. The Logistic Regression model is a little better than the dummy classifier for our data. Let us use the <span class="in">`DecisionTreeClassifier`</span> next. We will use <span class="in">`RandomizedSeachCV`</span> to select the optimum number of <span class="in">`max_feature`</span>s in order to produce the best validation score.</span>
-<span id="cb31-265"><a href="#cb31-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-268"><a href="#cb31-268" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-269"><a href="#cb31-269" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb31-270"><a href="#cb31-270" aria-hidden="true" tabindex="-1"></a><span class="co">#| freeze: true</span></span>
-<span id="cb31-271"><a href="#cb31-271" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-272"><a href="#cb31-272" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> RandomizedSearchCV</span>
-<span id="cb31-273"><a href="#cb31-273" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
-<span id="cb31-274"><a href="#cb31-274" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> randint</span>
-<span id="cb31-275"><a href="#cb31-275" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-276"><a href="#cb31-276" aria-hidden="true" tabindex="-1"></a>decision_tree_clf <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb31-277"><a href="#cb31-277" aria-hidden="true" tabindex="-1"></a>param_random <span class="op">=</span> {<span class="st">&#39;max_features&#39;</span>:randint(low<span class="op">=</span><span class="dv">2</span>,high<span class="op">=</span><span class="dv">20</span>)}</span>
-<span id="cb31-278"><a href="#cb31-278" aria-hidden="true" tabindex="-1"></a>random_search_tree <span class="op">=</span> RandomizedSearchCV(decision_tree_clf,param_distributions<span class="op">=</span>param_random,n_iter<span class="op">=</span><span class="dv">10</span>,cv<span class="op">=</span><span class="dv">5</span>,scoring<span class="op">=</span><span class="st">&#39;accuracy&#39;</span>)</span>
-<span id="cb31-279"><a href="#cb31-279" aria-hidden="true" tabindex="-1"></a>random_search_tree.fit(X_train, y_train)</span>
-<span id="cb31-280"><a href="#cb31-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-281"><a href="#cb31-281" aria-hidden="true" tabindex="-1"></a>cross_val_score(random_search_tree, X_train, y_train, cv<span class="op">=</span><span class="dv">3</span>,scoring<span class="op">=</span><span class="st">&#39;accuracy&#39;</span>)</span>
-<span id="cb31-282"><a href="#cb31-282" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-283"><a href="#cb31-283" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-284"><a href="#cb31-284" aria-hidden="true" tabindex="-1"></a>The <span class="in">`DecisionTreeClassifier`</span> produces an average accuracy of 41 % on the validation folds. We will import the <span class="in">`RandomForestClassifier`</span> , which aggregates a large number of decision trees together.</span>
-<span id="cb31-285"><a href="#cb31-285" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-288"><a href="#cb31-288" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-289"><a href="#cb31-289" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-255"><a href="#cb31-255" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyClassifier</span>
+<span id="cb31-256"><a href="#cb31-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-257"><a href="#cb31-257" aria-hidden="true" tabindex="-1"></a>dummy_clf <span class="op">=</span> DummyClassifier()</span>
+<span id="cb31-258"><a href="#cb31-258" aria-hidden="true" tabindex="-1"></a>dummy_clf.fit(X_train, y_train)</span>
+<span id="cb31-259"><a href="#cb31-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-260"><a href="#cb31-260" aria-hidden="true" tabindex="-1"></a>cross_val_score(dummy_clf, X_train, y_train, cv<span class="op">=</span><span class="dv">3</span>,scoring<span class="op">=</span><span class="st">&#39;accuracy&#39;</span>)</span>
+<span id="cb31-261"><a href="#cb31-261" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-262"><a href="#cb31-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-263"><a href="#cb31-263" aria-hidden="true" tabindex="-1"></a>The dummy classifier predicts the correct genre with 18 % accuracy. The Logistic Regression model is a little better than the dummy classifier for our data. Let us use the <span class="in">`DecisionTreeClassifier`</span> next. We will use <span class="in">`RandomizedSeachCV`</span> to select the optimum number of <span class="in">`max_feature`</span>s in order to produce the best validation score.</span>
+<span id="cb31-264"><a href="#cb31-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-267"><a href="#cb31-267" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-268"><a href="#cb31-268" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-269"><a href="#cb31-269" aria-hidden="true" tabindex="-1"></a><span class="co">#| freeze: true</span></span>
+<span id="cb31-270"><a href="#cb31-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-271"><a href="#cb31-271" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> RandomizedSearchCV</span>
+<span id="cb31-272"><a href="#cb31-272" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
+<span id="cb31-273"><a href="#cb31-273" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> randint</span>
+<span id="cb31-274"><a href="#cb31-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-275"><a href="#cb31-275" aria-hidden="true" tabindex="-1"></a>decision_tree_clf <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb31-276"><a href="#cb31-276" aria-hidden="true" tabindex="-1"></a>param_random <span class="op">=</span> {<span class="st">&#39;max_features&#39;</span>:randint(low<span class="op">=</span><span class="dv">2</span>,high<span class="op">=</span><span class="dv">20</span>)}</span>
+<span id="cb31-277"><a href="#cb31-277" aria-hidden="true" tabindex="-1"></a>random_search_tree <span class="op">=</span> RandomizedSearchCV(decision_tree_clf,param_distributions<span class="op">=</span>param_random,n_iter<span class="op">=</span><span class="dv">10</span>,cv<span class="op">=</span><span class="dv">5</span>,scoring<span class="op">=</span><span class="st">&#39;accuracy&#39;</span>)</span>
+<span id="cb31-278"><a href="#cb31-278" aria-hidden="true" tabindex="-1"></a>random_search_tree.fit(X_train, y_train)</span>
+<span id="cb31-279"><a href="#cb31-279" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-280"><a href="#cb31-280" aria-hidden="true" tabindex="-1"></a>cross_val_score(random_search_tree, X_train, y_train, cv<span class="op">=</span><span class="dv">3</span>,scoring<span class="op">=</span><span class="st">&#39;accuracy&#39;</span>)</span>
+<span id="cb31-281"><a href="#cb31-281" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-282"><a href="#cb31-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-283"><a href="#cb31-283" aria-hidden="true" tabindex="-1"></a>The <span class="in">`DecisionTreeClassifier`</span> produces an average accuracy of 41 % on the validation folds. We will import the <span class="in">`RandomForestClassifier`</span> , which aggregates a large number of decision trees together.</span>
+<span id="cb31-284"><a href="#cb31-284" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-287"><a href="#cb31-287" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-288"><a href="#cb31-288" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-289"><a href="#cb31-289" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-290"><a href="#cb31-290" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-291"><a href="#cb31-291" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-292"><a href="#cb31-292" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
-<span id="cb31-293"><a href="#cb31-293" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-294"><a href="#cb31-294" aria-hidden="true" tabindex="-1"></a>random_forest_clf <span class="op">=</span> RandomForestClassifier(n_jobs<span class="op">=-</span><span class="dv">1</span>,random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb31-295"><a href="#cb31-295" aria-hidden="true" tabindex="-1"></a>param_random <span class="op">=</span> [{<span class="st">&#39;n_estimators&#39;</span>:randint(low<span class="op">=</span><span class="dv">100</span>, high<span class="op">=</span><span class="dv">500</span>)},{<span class="st">&#39;max_leaf_nodes&#39;</span>:randint(low<span class="op">=</span><span class="dv">5</span>,high<span class="op">=</span><span class="dv">20</span>)}]</span>
-<span id="cb31-296"><a href="#cb31-296" aria-hidden="true" tabindex="-1"></a>random_search_forest <span class="op">=</span> RandomizedSearchCV(random_forest_clf,param_distributions<span class="op">=</span>param_random,n_iter<span class="op">=</span><span class="dv">10</span>,cv<span class="op">=</span><span class="dv">3</span>,scoring<span class="op">=</span><span class="st">&#39;accuracy&#39;</span>)</span>
-<span id="cb31-297"><a href="#cb31-297" aria-hidden="true" tabindex="-1"></a>random_search_forest.fit(X_train,y_train)</span>
-<span id="cb31-298"><a href="#cb31-298" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-299"><a href="#cb31-299" aria-hidden="true" tabindex="-1"></a>cross_val_score(random_search_forest, X_train, y_train, cv<span class="op">=</span><span class="dv">3</span>,scoring<span class="op">=</span><span class="st">&#39;accuracy&#39;</span>)</span>
-<span id="cb31-300"><a href="#cb31-300" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-301"><a href="#cb31-301" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-302"><a href="#cb31-302" aria-hidden="true" tabindex="-1"></a>The <span class="in">`RandomForestClassifier`</span> does better than the other models with an average accuracy of 53 % on the validation folds. Let us go one step further by using the <span class="in">`AdaBoostClassifier`</span> with the <span class="in">`RandomForestClassifier`</span> as the base estimator with a <span class="in">`learning_rate`</span> of 0.5.</span>
-<span id="cb31-303"><a href="#cb31-303" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-306"><a href="#cb31-306" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-307"><a href="#cb31-307" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-291"><a href="#cb31-291" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
+<span id="cb31-292"><a href="#cb31-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-293"><a href="#cb31-293" aria-hidden="true" tabindex="-1"></a>random_forest_clf <span class="op">=</span> RandomForestClassifier(n_jobs<span class="op">=-</span><span class="dv">1</span>,random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb31-294"><a href="#cb31-294" aria-hidden="true" tabindex="-1"></a>param_random <span class="op">=</span> [{<span class="st">&#39;n_estimators&#39;</span>:randint(low<span class="op">=</span><span class="dv">100</span>, high<span class="op">=</span><span class="dv">500</span>)},{<span class="st">&#39;max_leaf_nodes&#39;</span>:randint(low<span class="op">=</span><span class="dv">5</span>,high<span class="op">=</span><span class="dv">20</span>)}]</span>
+<span id="cb31-295"><a href="#cb31-295" aria-hidden="true" tabindex="-1"></a>random_search_forest <span class="op">=</span> RandomizedSearchCV(random_forest_clf,param_distributions<span class="op">=</span>param_random,n_iter<span class="op">=</span><span class="dv">10</span>,cv<span class="op">=</span><span class="dv">3</span>,scoring<span class="op">=</span><span class="st">&#39;accuracy&#39;</span>)</span>
+<span id="cb31-296"><a href="#cb31-296" aria-hidden="true" tabindex="-1"></a>random_search_forest.fit(X_train,y_train)</span>
+<span id="cb31-297"><a href="#cb31-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-298"><a href="#cb31-298" aria-hidden="true" tabindex="-1"></a>cross_val_score(random_search_forest, X_train, y_train, cv<span class="op">=</span><span class="dv">3</span>,scoring<span class="op">=</span><span class="st">&#39;accuracy&#39;</span>)</span>
+<span id="cb31-299"><a href="#cb31-299" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-300"><a href="#cb31-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-301"><a href="#cb31-301" aria-hidden="true" tabindex="-1"></a>The <span class="in">`RandomForestClassifier`</span> does better than the other models with an average accuracy of 53 % on the validation folds. Let us go one step further by using the <span class="in">`AdaBoostClassifier`</span> with the <span class="in">`RandomForestClassifier`</span> as the base estimator with a <span class="in">`learning_rate`</span> of 0.5.</span>
+<span id="cb31-302"><a href="#cb31-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-305"><a href="#cb31-305" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-306"><a href="#cb31-306" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-307"><a href="#cb31-307" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-308"><a href="#cb31-308" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-309"><a href="#cb31-309" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-310"><a href="#cb31-310" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> AdaBoostClassifier</span>
-<span id="cb31-311"><a href="#cb31-311" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-312"><a href="#cb31-312" aria-hidden="true" tabindex="-1"></a>best_estimator <span class="op">=</span> random_search_forest.best_estimator_</span>
-<span id="cb31-313"><a href="#cb31-313" aria-hidden="true" tabindex="-1"></a>ada_boost <span class="op">=</span> AdaBoostClassifier(best_estimator,n_estimators<span class="op">=</span><span class="dv">5</span>,learning_rate <span class="op">=</span> <span class="fl">0.5</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb31-314"><a href="#cb31-314" aria-hidden="true" tabindex="-1"></a>ada_boost.fit(X_train, y_train)</span>
-<span id="cb31-315"><a href="#cb31-315" aria-hidden="true" tabindex="-1"></a>cross_val_score(ada_boost, X_train, y_train, cv<span class="op">=</span><span class="dv">3</span>,scoring<span class="op">=</span><span class="st">&#39;accuracy&#39;</span>)</span>
-<span id="cb31-316"><a href="#cb31-316" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-317"><a href="#cb31-317" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-318"><a href="#cb31-318" aria-hidden="true" tabindex="-1"></a>The <span class="in">`AdaBoostClassifier`</span> actually does slightly worse than the <span class="in">`RandomForestClassifier`</span> on the validation folds. Therefore, let us use the <span class="in">`RandomForestClassifier`</span> for the rest of our analysis. Firstly, let us measure the accuracy of the <span class="in">`RandomForestClassifier`</span> on the test set.</span>
-<span id="cb31-319"><a href="#cb31-319" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-322"><a href="#cb31-322" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-323"><a href="#cb31-323" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-309"><a href="#cb31-309" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> AdaBoostClassifier</span>
+<span id="cb31-310"><a href="#cb31-310" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-311"><a href="#cb31-311" aria-hidden="true" tabindex="-1"></a>best_estimator <span class="op">=</span> random_search_forest.best_estimator_</span>
+<span id="cb31-312"><a href="#cb31-312" aria-hidden="true" tabindex="-1"></a>ada_boost <span class="op">=</span> AdaBoostClassifier(best_estimator,n_estimators<span class="op">=</span><span class="dv">5</span>,learning_rate <span class="op">=</span> <span class="fl">0.5</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb31-313"><a href="#cb31-313" aria-hidden="true" tabindex="-1"></a>ada_boost.fit(X_train, y_train)</span>
+<span id="cb31-314"><a href="#cb31-314" aria-hidden="true" tabindex="-1"></a>cross_val_score(ada_boost, X_train, y_train, cv<span class="op">=</span><span class="dv">3</span>,scoring<span class="op">=</span><span class="st">&#39;accuracy&#39;</span>)</span>
+<span id="cb31-315"><a href="#cb31-315" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-316"><a href="#cb31-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-317"><a href="#cb31-317" aria-hidden="true" tabindex="-1"></a>The <span class="in">`AdaBoostClassifier`</span> actually does slightly worse than the <span class="in">`RandomForestClassifier`</span> on the validation folds. Therefore, let us use the <span class="in">`RandomForestClassifier`</span> for the rest of our analysis. Firstly, let us measure the accuracy of the <span class="in">`RandomForestClassifier`</span> on the test set.</span>
+<span id="cb31-318"><a href="#cb31-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-321"><a href="#cb31-321" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-322"><a href="#cb31-322" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-323"><a href="#cb31-323" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-324"><a href="#cb31-324" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-325"><a href="#cb31-325" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-326"><a href="#cb31-326" aria-hidden="true" tabindex="-1"></a>random_search_forest.score(X_test, y_test) <span class="co"># print the accuracy score on the test set</span></span>
-<span id="cb31-327"><a href="#cb31-327" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-328"><a href="#cb31-328" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-329"><a href="#cb31-329" aria-hidden="true" tabindex="-1"></a>This classifier has an accuracy score of 53.7 % on the test set.</span>
-<span id="cb31-330"><a href="#cb31-330" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-331"><a href="#cb31-331" aria-hidden="true" tabindex="-1"></a><span class="fu">## Error Analysis</span></span>
-<span id="cb31-332"><a href="#cb31-332" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-333"><a href="#cb31-333" aria-hidden="true" tabindex="-1"></a>The code below produces a Confusion Matrix for the <span class="in">`RandomForestClassifier`</span>. As shown in the confusion matrix, many <span class="in">`edm`</span> tracks (14 %) have been misclassified as <span class="in">`pop`</span>. 16 % of the <span class="in">`latin`</span> tracks have been misclassified as <span class="in">`pop`</span> and <span class="in">`rap`</span> each. Similarly, 17 % of <span class="in">`pop`</span> tracks have been misclassified as <span class="in">`edm`</span> and <span class="in">`r&amp;b`</span> each. 21 % of <span class="in">`r&amp;b`</span> tracks have been misclassified. These misclassifications have been caused due to similarities in the genres themselves. For instance, many <span class="in">`r&amp;b`</span> and <span class="in">`rap`</span> songs have similarity <span class="in">`danceability`</span> and <span class="in">`speechiness`</span>. Further data collection is needed to differentiate the genres adequately.</span>
-<span id="cb31-334"><a href="#cb31-334" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-337"><a href="#cb31-337" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb31-338"><a href="#cb31-338" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb31-339"><a href="#cb31-339" aria-hidden="true" tabindex="-1"></a><span class="co">#| freeze: true</span></span>
-<span id="cb31-340"><a href="#cb31-340" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-341"><a href="#cb31-341" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_predict</span>
-<span id="cb31-342"><a href="#cb31-342" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> ConfusionMatrixDisplay</span>
-<span id="cb31-343"><a href="#cb31-343" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-344"><a href="#cb31-344" aria-hidden="true" tabindex="-1"></a>y_preds <span class="op">=</span> cross_val_predict(random_search_forest.best_estimator_,X_train, y_train, cv<span class="op">=</span><span class="dv">3</span>)</span>
-<span id="cb31-345"><a href="#cb31-345" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-346"><a href="#cb31-346" aria-hidden="true" tabindex="-1"></a>ConfusionMatrixDisplay.from_predictions(y_train,y_preds,normalize<span class="op">=</span><span class="st">&#39;true&#39;</span>,values_format<span class="op">=</span><span class="st">&#39;.0%&#39;</span>,colorbar<span class="op">=</span><span class="va">None</span>) <span class="co"># normalize predictions by row</span></span>
-<span id="cb31-347"><a href="#cb31-347" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb31-348"><a href="#cb31-348" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-325"><a href="#cb31-325" aria-hidden="true" tabindex="-1"></a>random_search_forest.score(X_test, y_test) <span class="co"># print the accuracy score on the test set</span></span>
+<span id="cb31-326"><a href="#cb31-326" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-327"><a href="#cb31-327" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-328"><a href="#cb31-328" aria-hidden="true" tabindex="-1"></a>This classifier has an accuracy score of 53.7 % on the test set.</span>
+<span id="cb31-329"><a href="#cb31-329" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-330"><a href="#cb31-330" aria-hidden="true" tabindex="-1"></a><span class="fu">## Error Analysis</span></span>
+<span id="cb31-331"><a href="#cb31-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-332"><a href="#cb31-332" aria-hidden="true" tabindex="-1"></a>The code below produces a Confusion Matrix for the <span class="in">`RandomForestClassifier`</span>. As shown in the confusion matrix, many <span class="in">`edm`</span> tracks (14 %) have been misclassified as <span class="in">`pop`</span>. 16 % of the <span class="in">`latin`</span> tracks have been misclassified as <span class="in">`pop`</span> and <span class="in">`rap`</span> each. Similarly, 17 % of <span class="in">`pop`</span> tracks have been misclassified as <span class="in">`edm`</span> and <span class="in">`r&amp;b`</span> each. 21 % of <span class="in">`r&amp;b`</span> tracks have been misclassified. These misclassifications have been caused due to similarities in the genres themselves. For instance, many <span class="in">`r&amp;b`</span> and <span class="in">`rap`</span> songs have similarity <span class="in">`danceability`</span> and <span class="in">`speechiness`</span>. Further data collection is needed to differentiate the genres adequately.</span>
+<span id="cb31-333"><a href="#cb31-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-336"><a href="#cb31-336" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb31-337"><a href="#cb31-337" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
+<span id="cb31-338"><a href="#cb31-338" aria-hidden="true" tabindex="-1"></a><span class="co">#| freeze: true</span></span>
+<span id="cb31-339"><a href="#cb31-339" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-340"><a href="#cb31-340" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_predict</span>
+<span id="cb31-341"><a href="#cb31-341" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> ConfusionMatrixDisplay</span>
+<span id="cb31-342"><a href="#cb31-342" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-343"><a href="#cb31-343" aria-hidden="true" tabindex="-1"></a>y_preds <span class="op">=</span> cross_val_predict(random_search_forest.best_estimator_,X_train, y_train, cv<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb31-344"><a href="#cb31-344" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-345"><a href="#cb31-345" aria-hidden="true" tabindex="-1"></a>ConfusionMatrixDisplay.from_predictions(y_train,y_preds,normalize<span class="op">=</span><span class="st">&#39;true&#39;</span>,values_format<span class="op">=</span><span class="st">&#39;.0%&#39;</span>,colorbar<span class="op">=</span><span class="va">None</span>) <span class="co"># normalize predictions by row</span></span>
+<span id="cb31-346"><a href="#cb31-346" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb31-347"><a href="#cb31-347" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
